@@ -9,7 +9,7 @@ import { IoIosArrowBack } from 'react-icons/io';
 import { RiHandbagLine, RiHeart3Fill, RiHeart3Line } from 'react-icons/ri';
 // import SimilarProducts from './SimilarProducts';
 import ProductReviews from './ProductReviews';
-import { SizeChart } from './SIzeChart';
+import { SizeChart } from './SizeChart';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
