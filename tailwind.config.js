@@ -8,9 +8,7 @@ module.exports = withMT({
   ],
   theme: {
     extend: {
-      fontFamily: {
-        custom: ['Lora', 'sans-serif'],
-      },
+    
       colors: {
         primary: "#C21E56",
         secondary: "#202224",

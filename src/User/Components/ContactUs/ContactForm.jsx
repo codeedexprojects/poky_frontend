@@ -19,7 +19,7 @@ export default function ContactForm() {
     };
 
     const handleSubmit = () => {
-        // Validate required fields
+        
         if (!formData.firstName || !formData.phone || !formData.message) {
             alert('Please fill in all required fields: First Name, Phone Number, and Message');
             return;
@@ -38,19 +38,16 @@ ${formData.message}
 *Sent via Poky Store Website*
         `.trim();
 
-        // Encode the message for URL
+        
         const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappNumber = '917994237001'; 
         
-        // WhatsApp number (remove spaces and special characters)
-        const whatsappNumber = '917994237001'; // +91 79942 37001 without + and spaces
-        
-        // Create WhatsApp URL
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
         
-        // Open WhatsApp in a new tab
+       
         window.open(whatsappUrl, '_blank');
         
-        // Optional: Reset form after submission
+        
         setFormData({
             firstName: '',
             lastName: '',
@@ -59,7 +56,7 @@ ${formData.message}
             message: ''
         });
         
-        // Optional: Show success message
+       
         alert('Redirecting to WhatsApp... Please send the pre-filled message to complete your inquiry.');
     };
 
