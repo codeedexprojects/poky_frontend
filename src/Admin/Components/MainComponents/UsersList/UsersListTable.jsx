@@ -153,7 +153,7 @@ const UsersListTable = ({ userList, setUserList }) => {
                                                         className="font-normal flex items-center gap-1 capitalize font-custom text-sm"
                                                     >
                                                         {user.name}
-                                                        {user.isFavorite === true && user.status === true ? <RiHeart3Fill className='text-black' /> : null}
+                                                        {user.isFavorite === true && user.status === true ? <RiHeart3Fill className='text-primary' /> : null}
                                                     </Typography>
                                                     {user.status === false && (
                                                         <p className='text-xs tracking-wider text-black font-bold absolute inset-0 flex

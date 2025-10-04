@@ -150,7 +150,7 @@ const UserLargeImage = ({ user }) => {
                             isFavorite ? (
                                 <RiHeart3Fill
                                     onClick={() => handleFavourite(user.id || user._id)}
-                                    className="absolute top-2 right-2 text-4xl bg-white text-black z-50 rounded-full shadow-md p-1 cursor-pointer"
+                                    className="absolute top-2 right-2 text-4xl bg-white text-primary z-50 rounded-full shadow-md p-1 cursor-pointer"
                                 />
                             ) : (
                                 <RiHeart3Line

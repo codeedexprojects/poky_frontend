@@ -220,7 +220,7 @@ const CartItems = () => {
                                     )}
                                     {item?.productId?.isInWishlist === true ? (
                                         <RiHeart3Fill
-                                            className='absolute top-2 right-2 cursor-pointer text-black'
+                                            className='absolute top-2 right-2 cursor-pointer text-primary'
                                         />
                                     ) : (
                                         <></>

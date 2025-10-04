@@ -550,7 +550,7 @@ const ProductDetails = () => {
                                             xl:text-base lg:text-base bg-transparent text-black border-[1px] border-gray-500 shadow-none rounded-md 
                                                 hover:shadow-none px-4'>
                                             <RiHeart3Fill
-                                                className='xl:text-3xl lg:text-3xl text-2xl cursor-pointer text-black'
+                                                className='xl:text-3xl lg:text-3xl text-2xl cursor-pointer text-primary'
                                             />
                                         </Button>
                                     ) : (

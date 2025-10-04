@@ -226,7 +226,7 @@ const OfferProducts = () => {
                                     {product.isInWishlist || heartIcons[product._id] ? (
                                         <RiHeart3Fill
                                             onClick={() => handleWishlist(product._id, product.title)}
-                                            className='absolute top-2 right-2 cursor-pointer text-black bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
+                                            className='absolute top-2 right-2 cursor-pointer text-primary bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
                                         />
                                     ) : (
                                         <RiHeart3Line
