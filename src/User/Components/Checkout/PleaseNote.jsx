@@ -24,9 +24,9 @@ const PleaseNote = () => {
                         <li>360º opening video must!! Otherwise no complaints will be accepted</li>
                         <li>Video should start, from showing the address label as it is sent by us right from the outer package...</li>
                         <li>Return requests without an unboxing video will not be accepted.</li>
-                        <li>Place your orders only at www.urbaan.in - no whatsapp orders</li>
-                        <li>Customer care number 9847820705</li>
-                        <li>Email id: urbaancustomercare@gmail.com</li>
+                        <li>Place your orders only at www.poky.in - no whatsapp orders</li>
+                        <li>Customer care number +91 79942 37001</li>
+                        <li>Email id: pokyonline@gmail.com</li>
                         <li>If you have a return request, you will have to raise a query through our support platforms Call/Website Support Portal etc within 24 hours.</li>
                         <li>Discounted items are final and cannot be returned or exchanged</li>
                         <li>Once a product is dispatched, returns are not accepted.</li>

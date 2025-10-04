@@ -114,8 +114,8 @@ const Checkout = () => {
             key: "rzp_live_MrSkSujB02FR7y",
             amount: orderResponse.amount,
             currency: orderResponse.currency,
-            name: "URBAAN COLLECTIONS",
-            description: "Welcome to URBAAN COLLECTIONS, a fashion and lifestyle e-commerce platform located at 3rd Floor, Oberon Mall, Edappally, Ernakulam, Kerala - 682024.",
+            name: "POKY",
+            description: "Welcome to Poky COLLECTIONS, a fashion and lifestyle e-commerce platform located at 3rd Floor, Oberon Mall, Edappally, Ernakulam, Kerala - 682024.",
             image: "/logo.png",
             order_id: orderResponse.razorpayOrderId,
             handler: async function (response) {

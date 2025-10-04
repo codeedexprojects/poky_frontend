@@ -9,7 +9,7 @@ const RefundPolicy = () => {
             <div className="space-y-6">
                 <div>
                     <h2 className="text-lg font-semibold mb-2">Complaints</h2>
-                    <p className="mb-2">Complaints about Product quality should be done within 24 hours of the delivery. To launch a complaint, please contact Customer care number 9847820705 or email us at urbaancustomercare@gmail.com</p>
+                    <p className="mb-2">Complaints about Product quality should be done within 24 hours of the delivery. To launch a complaint, please contact Customer care number +91 79942 37001 or email us at pokyonline@gmail.com</p>
                     <p>If the reason for return is genuine, Our Team will replace the item.</p>
                     <p>We do not encourage returns or refunds for any of our products as we take utmost care in ensuring high-quality standards for all our products. Please note that the received product must be unused and unwashed</p>
                 </div>
@@ -35,7 +35,7 @@ const RefundPolicy = () => {
 
                 <div>
                     <h2 className="text-lg font-semibold mb-2">Cancellation of Order.</h2>
-                    <p className="mb-2">Once you have booked the order, we do not encourage cancellation from the user end. Please reach out to our customer care service. CUSTOMER CARE  9847820705  Within 2 hours of order placement OR send email to urbaancustomercare@gmail.com</p>
+                    <p className="mb-2">Once you have booked the order, we do not encourage cancellation from the user end. Please reach out to our customer care service. CUSTOMER CARE  9847820705  Within 2 hours of order placement OR send email to pokyonline@gmail.com</p>
                     <p className="mb-2">For payment made online, the refund will be done to the bank account only within 3 Working days</p>
                     <ul className="list-disc list-inside space-y-1">
                         <li>Cancellation requests for customized pre-booked or personalized orders are not possible under any circumstances.</li>

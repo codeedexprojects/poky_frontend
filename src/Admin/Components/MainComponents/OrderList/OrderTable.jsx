@@ -41,13 +41,13 @@ const OrderTable = ({ orderList, setOrderList }) => {
   
   // Shop address - you can modify this as needed
   const SHOP_ADDRESS = {
-    name: "URBAAN Collections",
-    address: "3rd Floor, Oberon Mall, Edappally",
+    name: "Poky",
+    address: "Poky Store - Adam square, Angamaly",
     city: "Ernakulam",
     state: "Kerala",
-    pincode: "682024",
-    phone: "+91 8921407174",
-    email: "urbaancollections@gmail.com"
+    pincode: "680308",
+    phone: "+91 79942 37001",
+    email: "pokyonline@gmail.com"
   };
 
   const handleEditTrackId = (trackId) => {

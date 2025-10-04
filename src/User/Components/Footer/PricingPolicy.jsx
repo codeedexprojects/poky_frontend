@@ -4,11 +4,11 @@ const PricingPolicy = () => {
     return (
         <div className="py-10 px-6 md:px-20 lg:px-40">
             <h1 className="text-center text-3xl font-bold mb-8">Pricing Policy</h1>
-            <h2 className="text-center text-xl font-semibold mb-6">URBAAN COLLECTIONS Pricing Policy</h2>
+            <h2 className="text-center text-xl font-semibold mb-6">Poky  Pricing Policy</h2>
             
             <div className="space-y-6">
                 <p className="mb-4">
-                    At URBAAN COLLECTIONS, we are committed to providing high-quality ladies' wear to our valued customers at fair and competitive prices. Our pricing policy is designed to ensure transparency, value, and affordability while maintaining our commitment to quality and customer satisfaction.
+                    At Poky , we are committed to providing high-quality ladies' wear to our valued customers at fair and competitive prices. Our pricing policy is designed to ensure transparency, value, and affordability while maintaining our commitment to quality and customer satisfaction.
                 </p>
 
                 <div>
@@ -61,7 +61,7 @@ const PricingPolicy = () => {
                 </div>
 
                 <p className="mt-6">
-                    At URBAAN COLLECTIONS Fashions, we are committed to providing not only stylish and trendy ladies' wear but also an exceptional shopping experience characterized by fair pricing, quality products, and excellent customer service.
+                    At Poky COLLECTIONS Fashions, we are committed to providing not only stylish and trendy ladies' wear but also an exceptional shopping experience characterized by fair pricing, quality products, and excellent customer service.
                 </p>
             </div>
         </div>

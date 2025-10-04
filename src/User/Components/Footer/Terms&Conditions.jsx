@@ -13,17 +13,17 @@ const TermsConditions = () => {
 
                 <h2 className="text-lg font-semibold mb-2">1. Revisions</h2>
                 <p className="mb-4">
-                    The materials appearing on the website could include technical, typographical, or photographic errors. URBAAN COLLECTIONS does not warrant that any of the materials on its website are accurate, complete, or current. The materials, contents, and photos on the site can be changed at any time without notice.
+                    The materials appearing on the website could include technical, typographical, or photographic errors. POKY COLLECTIONS does not warrant that any of the materials on its website are accurate, complete, or current. The materials, contents, and photos on the site can be changed at any time without notice.
                 </p>
 
                 <h2 className="text-lg font-semibold mb-2">2. Links</h2>
                 <p className="mb-4">
-                    URBAAN COLLECTIONS has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement. Use of any such linked web site is at the user's own risk.
+                    POKY COLLECTIONS has not reviewed all of the sites linked to its Internet web site and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement. Use of any such linked web site is at the user's own risk.
                 </p>
 
                 <h2 className="text-lg font-semibold mb-2">3. Site Terms of Use Modifications</h2>
                 <p className="mb-4">
-                    URBAAN COLLECTIONS have the right to revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.
+                    POKY COLLECTIONS have the right to revise these terms of use for its web site at any time without notice. By using this web site you are agreeing to be bound by the then current version of these Terms and Conditions of Use.
                 </p>
 
                 <h2 className="text-lg font-semibold mb-2">4. Your Account and Registration Obligations</h2>
@@ -33,7 +33,7 @@ const TermsConditions = () => {
 
                 <h2 className="text-lg font-semibold mb-2">5. Governing Law</h2>
                 <p className="mb-4">
-                    Any claim relating to the website of URBAAN COLLECTIONS shall be governed by the laws of the State of Kerala without regard to its conflict of law provisions.
+                    Any claim relating to the website of POKY COLLECTIONS shall be governed by the laws of the State of Kerala without regard to its conflict of law provisions.
                 </p>
 
                 <h2 className="text-lg font-semibold mb-2">Disclaimer</h2>
@@ -41,9 +41,9 @@ const TermsConditions = () => {
                     Your use of the Website and services and tools are governed by the following terms and conditions ("Terms of Use") as applicable to the Website including the applicable policies. If you transact on the Website, You shall be subject to the policies that are applicable to the Website for such transactions. If you require any more information or have any questions about our site's disclaimer, please feel free to contact us.
                 </p>
 
-                <h3 className="font-semibold mb-2">Disclaimers for URBAAN COLLECTIONS:</h3>
+                <h3 className="font-semibold mb-2">Disclaimers for POKY COLLECTIONS:</h3>
                 <p className="mb-4">
-                    All the information on this website is published in good faith and for general information purpose only. URBAAN COLLECTIONS does not make any warranties about the completeness, reliability, and accuracy of this information. Any action you take upon the information you find on this website is strictly at your own risk. We will not be liable for any losses and/or damages in connection with the use of our website.
+                    All the information on this website is published in good faith and for general information purpose only. POKY COLLECTIONS does not make any warranties about the completeness, reliability, and accuracy of this information. Any action you take upon the information you find on this website is strictly at your own risk. We will not be liable for any losses and/or damages in connection with the use of our website.
                 </p>
 
                 <h3 className="font-semibold mb-2">Consent</h3>
@@ -56,13 +56,13 @@ const TermsConditions = () => {
                     If you have any questions regarding these Terms and Conditions, you can reach us at:
                 </p>
                 <p className="mb-4">
-                    <strong>URBAAN COLLECTIONS</strong>
+                    <strong>POKY</strong>
                     <br />
-                    3rd Floor, Oberon Mall, Edappally, Ernakulam, Kerala - 682024
+                    Poky Store - Adam square, Angamaly - 680308
                     <br />
-                    Phone: 9847820705
+                    Phone: +91 79942 37001
                     <br />
-                    Email: chimsuc@gmail.com
+                    Email: pokyonline@gmail.com
                 </p>
             </div>
         </>

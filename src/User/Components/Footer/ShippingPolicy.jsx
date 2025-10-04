@@ -13,7 +13,7 @@ const ShippingPolicy = () => {
                 
                 <p>Tracking id will be send to your email id, you can track the courier directly from courier service.</p>
                 
-                <p>If there is any delay in courier due to the issues courier service URBAAN COLLECTIONS is not responsible.</p>
+                <p>If there is any delay in courier due to the issues courier service POKY COLLECTIONS is not responsible.</p>
                 
                 <p>Do not receive the item if the package is damaged. If so report it in respective courier or postal office.</p>
             </div>
