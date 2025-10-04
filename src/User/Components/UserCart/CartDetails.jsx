@@ -220,7 +220,7 @@ const CartDetails = () => {
     return (
         <>
             {/* coupon */}
-            <Card className='p-4'>
+            {/* <Card className='p-4'>
                 {isCouponApplied ? (
                     <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-3'>
@@ -251,11 +251,9 @@ const CartDetails = () => {
                             <IoIosArrowForward className='text-secondary text-2xl' />
                         </div>
 
-                        {/* Available Coupons Dropdown */}
                         <div className='mt-3'>
 
 
-                            {/* Show coupon details when available */}
                             {availableCoupons.length > 0 && !loadingCoupons && (
                                 <div className='mt-2 p-2 bg-blue-50 rounded-lg'>
                                     <p className='text-xs text-blue-600 font-medium'>Available Offers:</p>
@@ -272,16 +270,16 @@ const CartDetails = () => {
                                                 <span className='ml-1'>on {coupon.category.map(cat => cat.name).join(', ')}</span>
                                             </div>
                                         ))}
-                                        {/* {availableCoupons.length > 2 && (
-                                            <p className='text-xs text-gray-500'>+{availableCoupons.length - 2} more offers available</p>
-                                        )} */}
+                                        // {availableCoupons.length > 2 && (
+                                        //     <p className='text-xs text-gray-500'>+{availableCoupons.length - 2} more offers available</p>
+                                        // )}
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
                 )}
-            </Card>
+            </Card> */}
 
             {/* total */}
             <Card className='p-4 xl:p-6 lg:p-6'>

@@ -60,10 +60,10 @@ export function AppSidebar() {
                     { to: "/adminHome/sizechart", label: "Size Chart", icon: TbRulerMeasure, key: "sizechart" },
                     { to: "/adminHome/specifications", label: "Specifications", icon: GiRolledCloth, key: "specifications" },
                     { to: "/adminHome/delivery", label: "Delivery", icon: TbTruckDelivery, key: "delivery" },
-                    { to: "/adminHome/coupon", label: "Coupons", icon: RiCouponLine, key: "coupon" },
+                    // { to: "/adminHome/coupon", label: "Coupons", icon: RiCouponLine, key: "coupon" },
                     { to: "/adminHome/userslist", label: "Users List", icon: PiUsersBold, key: "userslist" },
                     { to: "/adminHome/orderlist", label: "Order List", icon: TbListCheck, key: "orderlist" },
-                    { to: "/adminHome/invoice", label: "Invoice", icon: TbFileInvoice, key: "invoice" }
+                    // { to: "/adminHome/invoice", label: "Invoice", icon: TbFileInvoice, key: "invoice" }
                 ].map(({ to, label, icon: Icon, key }) => (
                     <Link to={to} key={key}>
                         <ListItem onClick={() => setActiveLink(key)} className={`text-secondary bg-gray-100 p-3 text-base font-medium transition-all duration-300 ease-in-out
