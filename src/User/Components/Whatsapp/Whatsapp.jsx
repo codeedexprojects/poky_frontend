@@ -8,6 +8,7 @@ const MyWhatsapp = () => {
                 phoneNumber='7994237001'
                 accountName='POKY'
                 notification="true"
+                darkMode='true'
                 avatar='logo.png'
                 notificationSound='true'
                 chatMessage='Hi there! 👋 How can we assist you with your shopping today?'
