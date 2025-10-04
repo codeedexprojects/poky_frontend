@@ -11,27 +11,32 @@ const Footer = () => {
     <>
       <div className='bg-black text-white pt-16 pb-8 px-6 xl:px-16 lg:px-16'>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 lg:grid-cols-4 gap-12 xl:gap-16 lg:gap-16">
-          
+
           {/* Brand Section */}
           <div>
             <div className='flex items-center gap-2 mb-4'>
-              <div className='bg-white w-10 h-10 rounded-full flex items-center justify-center'>
-                <span className='text-black font-bold text-xl'>P</span>
+              <div className='bg-white w-10 h-10 rounded-full flex items-center justify-center overflow-hidden'>
+                <img
+                  src="/logo2.png"
+                  alt="Logo"
+                  className='w-5 h-5 object-cover'
+                />
               </div>
-              <h1 className='text-2xl font-bold tracking-wider'>POKY</h1>
+              <h1 className='text-2xl font-bold tracking-wider'><b>P O K Y</b></h1>
             </div>
             <p className='text-gray-400 text-sm leading-relaxed mb-6'>
               Premium clothing brand offering the finest quality apparel with modern design and comfort.
             </p>
-            <a 
-              href="https://instagram.com" 
-              target="_blank" 
+            <a
+              href="https://instagram.com"
+              target="_blank"
               rel="noopener noreferrer"
               className='inline-block hover:text-gray-300 transition-colors'
             >
               <FaInstagram className='text-2xl' />
             </a>
           </div>
+
 
           {/* Quick Links */}
           <div>
