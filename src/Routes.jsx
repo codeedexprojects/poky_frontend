@@ -53,6 +53,7 @@ import PleaseNote from './User/Components/Checkout/PleaseNote'
 import PricingPolicy from './User/Components/Footer/PricingPolicy'
 import MaterialsList from './Admin/Components/MainComponents/Material/AddMaterial';
 import ProductSpecifications from './Admin/Components/MainComponents/Specifications/AddSpecifications';
+import ContactForm from './User/Components/ContactUs/ContactForm';
 
 
 const FullRoutes = () => {
@@ -107,6 +108,8 @@ const RoutesWithLocation = () => {
                 <Route path='/refund-policy' element={<RefundPolicy />} />
                 <Route path='/pricing-policy' element={<PricingPolicy />} />
                 <Route path='/please-note' element={<PleaseNote />} />
+                <Route path='/contact' element={<ContactForm />} />
+
 
                 {/* Routes of admin section */}
                 <Route path='/admin-login' element={<LoginSignUp />} />

@@ -14,11 +14,14 @@ import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { MdZoomOutMap } from 'react-icons/md';
 import { ImageZoomModal } from '../ImageZoomModal/ImageZoomModal';
 
-
 const FeaturedProducts = () => {
     const { BASE_URL, setFav, fetchWishlistProducts, setWishlist } = useContext(AppContext);
     const [featuredProducts, setFeaturedProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [isLoading, setIsLoading] = useState(true);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [heartIcons, setHeartIcons] = useState({});
     const [showAllFeature, setShowAllFeature] = useState(false);
     const [openImageModal, setOpenImageModal] = React.useState(false);
@@ -41,28 +44,61 @@ const FeaturedProducts = () => {
         setOpenUserNotLogin(!openUserNotLogin);
     };
 
-
     //handle image zoom
     const handleOpenImageZoom = (productImages, index) => {
         setOpenImageModal(!openImageModal);
         setZoomImage({ images: productImages, currentIndex: index });
     }
 
+    // fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/user/category/get`);
+                setCategories(response.data);
+                setCategoriesLoading(false);
+            } catch (error) {
+                console.error(error);
+                console.log("Category data could not be fetched.");
+                setCategoriesLoading(false);
+            }
+        };
+        fetchCategories();
+    }, [BASE_URL]);
+
     // fetch featured products
     const fetchFeaturedProducts = async () => {
         try {
-            const params = userId ? { userId } : {}; // Only include userId if it exists
+            const params = userId ? { userId } : {}; 
             const response = await axios.get(`${BASE_URL}/user/products/view-products`, { params });
             const filteredProducts = response.data.filter(product => product.isFeaturedProduct);
-            setFeaturedProducts(filteredProducts)
-            setIsLoading(false)
+            setFeaturedProducts(filteredProducts);
+            setFilteredProducts(filteredProducts); // Initialize filtered products with all featured products
+            setIsLoading(false);
         } catch (error) {
             console.error("Error fetching offer products:", error);
+            setIsLoading(false);
         }
     }
+
     useEffect(() => {
-        fetchFeaturedProducts()
-    }, [])
+        fetchFeaturedProducts();
+    }, []);
+
+    // Filter products by category
+    const filterProductsByCategory = (categoryName) => {
+        setSelectedCategory(categoryName);
+        
+        if (categoryName === 'All') {
+            setFilteredProducts(featuredProducts);
+        } else {
+            const filtered = featuredProducts.filter(product => 
+                product.category && product.category.name === categoryName
+            );
+            setFilteredProducts(filtered);
+        }
+        setShowAllFeature(false); // Reset view all when filter changes
+    };
 
     // add to wishlist
     const handleWishlist = async (productId, productTitle) => {
@@ -80,11 +116,9 @@ const FeaturedProducts = () => {
                 toast.success(`${productTitle} added to wishlist`);
                 setHeartIcons(prev => ({ ...prev, [productId]: true }));
                 fetchWishlistProducts();
-                // setWishlist(prevFav => [...prevFav, { productId }]);
             } else {
                 toast.error(`${productTitle} removed from wishlist`);
                 setHeartIcons(prev => ({ ...prev, [productId]: false }));
-                // setWishlist(prevFav => prevFav.filter(item => item.productId !== productId));
                 fetchFeaturedProducts();
                 fetchWishlistProducts();
             }
@@ -95,9 +129,8 @@ const FeaturedProducts = () => {
     };
 
     const visibleProducts = showAllFeature
-        ? featuredProducts
-        : featuredProducts.slice(0, screenWidth < 640 ? 6 : 5);
-
+        ? filteredProducts
+        : filteredProducts.slice(0, screenWidth < 640 ? 6 : 5);
 
     return (
         <>
@@ -107,120 +140,155 @@ const FeaturedProducts = () => {
                 </h1>
 
                 <p className='text-gray-600 text-base md:text-lg lg:text-lg mt-2 text-center xl:text-left'>
-                    Take another look at your favorites – the styles you browsed are waiting. Don’t let <br /> them slip away, they might sell out soon!
+                    Take another look at your favorites – the styles you browsed are waiting. Don't let <br /> them slip away, they might sell out soon!
                 </p>
 
                 {/* Filter Buttons */}
                 <div className='flex items-center gap-3 mt-4 flex-wrap'>
-                    <button className='px-5 py-2 rounded-full border border-gray-300 bg-black text-white text-sm font-medium hover:bg-gray-900 transition-colors'>
+                    <button 
+                        onClick={() => filterProductsByCategory('All')}
+                        className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                            selectedCategory === 'All' 
+                            ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                    >
                         All
                     </button>
-                    <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-                        Mens
-                    </button>
-                    <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-                        Ladies
-                    </button>
-                    <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-                        Kids
-                    </button>
-                </div>
-            </div>
-            {
-                isLoading ? (
-                    <div className="col-span-2 flex justify-center items-center h-[50vh]">
-                        <AppLoader />
-                    </div>
-                ) : featuredProducts.length === 0 ? (
-                    <>
-                        <p className='col-span-5 flex items-center justify-center h-[50vh]'>No products available</p>
-                    </>
-                ) : (
-                    <>
-                        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 lg:grid-cols-5 gap-5 pb-10'>
-                            {
-                                visibleProducts.map((product) => {
-                                    return (
-                                        <div className='group relative' key={product._id}>
-                                            <Link
-                                                to={`/product-details/${product._id}/${product.category._id}`}
-                                                state={{
-                                                    productId: product._id,
-                                                    categoryId: product.category._id
-                                                }}
-                                                className="cursor-pointer"
-                                            >
-                                                <div className='w-full aspect-[2/3] rounded-xl overflow-hidden'>
-                                                    <img
-                                                        src={product.images[0]}
-                                                        alt={product.title}
-                                                        className='w-full h-full object-cover rounded-xl shadow-md
-                                                        transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105'
-                                                        onError={(e) => e.target.src = '/no-image.jpg'}
-                                                    />
-                                                </div>
-                                            </Link>
-                                            <MdZoomOutMap
-                                                onClick={() => handleOpenImageZoom(product.images, 0)}
-                                                className='absolute top-2 left-2 cursor-pointer text-gray-600 bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                            />
-                                            {product.isInWishlist || heartIcons[product._id] ? (
-                                                <RiHeart3Fill
-                                                    onClick={() => handleWishlist(product._id, product.title)}
-                                                    className='absolute top-2 right-2 cursor-pointer text-primary bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                                />
-                                            ) : (
-                                                <RiHeart3Line
-                                                    onClick={() => handleWishlist(product._id, product.title)}
-                                                    className='absolute top-2 right-2 cursor-pointer bg-white text-gray-600 w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                                />
-                                            )}
-                                            <div className='mt-3'>
-                                                <h4 className='font-medium text-sm xl:text-lg lg:text-lg capitalize truncate w-40 xl:w-60 lg:w-60'>{product.title.slice(0, 15) + '...'}</h4>
-                                                <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm capitalize truncate overflow-hidden 
-                                                whitespace-nowrap w-40 xl:w-60 lg:w-60'>
-                                                    {product.description.slice(0, 20) + '...'}
-                                                </p>
-                                                <div className='flex items-center gap-2 mt-2'>
-                                                    <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
-                                                        ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
-                                                    </p>
-                                                    <p className='text-black/70 text-sm xl:text-base lg:text-base line-through'>
-                                                        ₹{product.actualPrice % 1 >= 0.9 ? Math.ceil(product.actualPrice) : Math.floor(product.actualPrice)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    )
-                                })}
+                    
+                    {categoriesLoading ? (
+                        <div className="flex gap-3">
+                            {[1, 2, 3].map((item) => (
+                                <div key={item} className="px-5 py-2 rounded-full border border-gray-300 bg-gray-200 animate-pulse">
+                                    <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                                </div>
+                            ))}
                         </div>
+                    ) : (
+                        categories.map((category) => (
+                            <button 
+                                key={category.id}
+                                onClick={() => filterProductsByCategory(category.name)}
+                                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                                    selectedCategory === category.name 
+                                    ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+                                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                {category.name}
+                            </button>
+                        ))
+                    )}
+                </div>
 
-                        {featuredProducts.length > 5 && (
-                            <div className='flex justify-center items-center pb-8'>
-                                <Button
-                                    onClick={() => setShowAllFeature(!showAllFeature)}
-                                    className='bg-transparent font-custom shadow-none text-black font-normal capitalize text-sm 
-                                    flex items-center gap-2 border border-black rounded-3xl px-3 py-2 hover:shadow-none'
-                                >
-                                    {showAllFeature ? "View Less" : "View All"} {showAllFeature ? <IoIosArrowUp /> : <IoIosArrowDown />}
-                                </Button>
-                            </div>
-                        )}
+                {/* Selected category info */}
+                {selectedCategory !== 'All' && (
+                    <div className="mt-3">
+                        <p className="text-gray-600 text-sm">
+                            Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} in {selectedCategory}
+                        </p>
+                    </div>
+                )}
+            </div>
 
-                        <ImageZoomModal
-                            open={openImageModal}
-                            handleOpen={handleOpenImageZoom}
-                            zoomImage={zoomImage}
-                        />
+            {isLoading ? (
+                <div className="col-span-2 flex justify-center items-center h-[50vh]">
+                    <AppLoader />
+                </div>
+            ) : filteredProducts.length === 0 ? (
+                <>
+                    <p className='col-span-5 flex items-center justify-center h-[50vh]'>
+                        {selectedCategory === 'All' 
+                            ? 'No featured products available' 
+                            : `No featured products available in ${selectedCategory}`
+                        }
+                    </p>
+                </>
+            ) : (
+                <>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 lg:grid-cols-5 gap-5 pb-10'>
+                        {visibleProducts.map((product) => {
+                            return (
+                                <div className='group relative' key={product._id}>
+                                    <Link
+                                        to={`/product-details/${product._id}/${product.category._id}`}
+                                        state={{
+                                            productId: product._id,
+                                            categoryId: product.category._id
+                                        }}
+                                        className="cursor-pointer"
+                                    >
+                                        <div className='w-full aspect-[2/3] rounded-xl overflow-hidden'>
+                                            <img
+                                                src={product.images[0]}
+                                                alt={product.title}
+                                                className='w-full h-full object-cover rounded-xl shadow-md
+                                                transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105'
+                                                onError={(e) => e.target.src = '/no-image.jpg'}
+                                            />
+                                        </div>
+                                    </Link>
+                                    <MdZoomOutMap
+                                        onClick={() => handleOpenImageZoom(product.images, 0)}
+                                        className='absolute top-2 left-2 cursor-pointer text-gray-600 bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
+                                    />
+                                    {product.isInWishlist || heartIcons[product._id] ? (
+                                        <RiHeart3Fill
+                                            onClick={() => handleWishlist(product._id, product.title)}
+                                            className='absolute top-2 right-2 cursor-pointer text-primary bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
+                                        />
+                                    ) : (
+                                        <RiHeart3Line
+                                            onClick={() => handleWishlist(product._id, product.title)}
+                                            className='absolute top-2 right-2 cursor-pointer bg-white text-gray-600 w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
+                                        />
+                                    )}
+                                    <div className='mt-3'>
+                                        <h4 className='font-medium text-sm xl:text-lg lg:text-lg capitalize truncate w-40 xl:w-60 lg:w-60'>
+                                            {product.title.slice(0, 15) + '...'}
+                                        </h4>
+                                        <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm capitalize truncate overflow-hidden 
+                                        whitespace-nowrap w-40 xl:w-60 lg:w-60'>
+                                            {product.description.slice(0, 20) + '...'}
+                                        </p>
+                                        <div className='flex items-center gap-2 mt-2'>
+                                            <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
+                                                ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
+                                            </p>
+                                            <p className='text-black/70 text-sm xl:text-base lg:text-base line-through'>
+                                                ₹{product.actualPrice % 1 >= 0.9 ? Math.ceil(product.actualPrice) : Math.floor(product.actualPrice)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
 
-                        <UserNotLoginPopup
-                            open={openUserNotLogin}
-                            handleOpen={handleOpenUserNotLogin}
-                        />
-                    </>
-                )
-            }
+                    {filteredProducts.length > 5 && (
+                        <div className='flex justify-center items-center pb-8'>
+                            <Button
+                                onClick={() => setShowAllFeature(!showAllFeature)}
+                                className='bg-transparent font-custom shadow-none text-black font-normal capitalize text-sm 
+                                flex items-center gap-2 border border-black rounded-3xl px-3 py-2 hover:shadow-none'
+                            >
+                                {showAllFeature ? "View Less" : "View All"} {showAllFeature ? <IoIosArrowUp /> : <IoIosArrowDown />}
+                            </Button>
+                        </div>
+                    )}
+
+                    <ImageZoomModal
+                        open={openImageModal}
+                        handleOpen={handleOpenImageZoom}
+                        zoomImage={zoomImage}
+                    />
+
+                    <UserNotLoginPopup
+                        open={openUserNotLogin}
+                        handleOpen={handleOpenUserNotLogin}
+                    />
+                </>
+            )}
         </>
     )
 }

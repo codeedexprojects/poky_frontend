@@ -5,7 +5,7 @@ const MyWhatsapp = () => {
     return (
         <>
             <FloatingWhatsApp
-                phoneNumber='9847820705'
+                phoneNumber='7994237001'
                 accountName='POKY'
                 notification="true"
                 avatar='logo.png'

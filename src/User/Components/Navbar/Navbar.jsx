@@ -113,7 +113,7 @@ const UserNavbar = () => {
 
     return (
         <>
-            {/* 🔝 Top Strip */}
+         
             <div className="w-full bg-black text-white text-center text-xs py-1" >
                 Premium Quality Guaranteed
             </div>

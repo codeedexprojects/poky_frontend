@@ -15,7 +15,11 @@ import { ImageZoomModal } from '../ImageZoomModal/ImageZoomModal';
 const OfferProducts = () => {
     const { BASE_URL, fetchWishlistProducts, setWishlist } = useContext(AppContext);
     const [offerProducts, setOfferProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('All');
     const [isLoading, setIsLoading] = useState(true);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [heartIcons, setHeartIcons] = useState({});
     const [showAllOffer, setShowAllOffer] = useState(false);
     const [openImageModal, setOpenImageModal] = React.useState(false);
@@ -23,13 +27,13 @@ const OfferProducts = () => {
     const [openUserNotLogin, setOpenUserNotLogin] = useState(false);
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
-    const handleResize = () => setScreenWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-  
-    // Cleanup function
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    useEffect(() => {
+        const handleResize = () => setScreenWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+    
+        // Cleanup function
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const userId = localStorage.getItem('userId');
 
@@ -44,6 +48,22 @@ const OfferProducts = () => {
         setZoomImage({ images: productImages, currentIndex: index });
     }
 
+    // fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/user/category/get`);
+                setCategories(response.data);
+                setCategoriesLoading(false);
+            } catch (error) {
+                console.error(error);
+                console.log("Category data could not be fetched.");
+                setCategoriesLoading(false);
+            }
+        };
+        fetchCategories();
+    }, [BASE_URL]);
+
     // fetch offer products
     const fetchOfferProducts = async () => {
         try {
@@ -51,15 +71,32 @@ const OfferProducts = () => {
             const response = await axios.get(`${BASE_URL}/user/products/view-products`, { params });
             const filteredProducts = response.data.filter(product => product.isOfferProduct);
             setOfferProducts(filteredProducts);
+            setFilteredProducts(filteredProducts); // Initialize filtered products with all offer products
             setIsLoading(false);
         } catch (error) {
             console.error("Error fetching offer products:", error);
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         fetchOfferProducts();
     }, []);
+
+    // Filter products by category
+    const filterProductsByCategory = (categoryName) => {
+        setSelectedCategory(categoryName);
+        
+        if (categoryName === 'All') {
+            setFilteredProducts(offerProducts);
+        } else {
+            const filtered = offerProducts.filter(product => 
+                product.category && product.category.name === categoryName
+            );
+            setFilteredProducts(filtered);
+        }
+        setShowAllOffer(false); // Reset view all when filter changes
+    };
 
     const handleWishlist = async (productId, productTitle) => {
         try {
@@ -76,71 +113,92 @@ const OfferProducts = () => {
                 toast.success(`${productTitle} added to wishlist`);
                 setHeartIcons(prev => ({ ...prev, [productId]: true }));
                 fetchWishlistProducts();
-                // setWishlist(prevFav => [...prevFav, { productId }]);
             } else {
                 toast.error(`${productTitle} removed from wishlist`);
                 setHeartIcons(prev => ({ ...prev, [productId]: false }));
-                // setWishlist(prevFav => prevFav.filter(item => item.productId !== productId)); 
                 fetchOfferProducts();
                 fetchWishlistProducts();
             }
-
-            // setFav((prevFav) => {
-            //     if (response.data.isInWishlist) {
-            //         // Product added to wishlist
-            //         return prevFav.some(item => item.productId === payload.productId)
-            //             ? prevFav
-            //             : [...prevFav, payload];
-            //     } else {
-            //         // Product removed from wishlist
-            //         return prevFav.filter(item => item.productId !== payload.productId);
-            //     }
-            // });
 
         } catch (error) {
             throw new Error(error)
         }
     };
 
-
     const visibleProducts = showAllOffer
-  ? offerProducts
-  : offerProducts.slice(0, screenWidth < 640 ? 6 : 5);
-
+        ? filteredProducts
+        : filteredProducts.slice(0, screenWidth < 640 ? 6 : 5);
 
     return (
         <>
             <div className='mb-6'>
-        <h1 className='text-secondary text-2xl md:text-3xl lg:text-4xl font-bold text-center xl:text-left mb-3'>
-          <b>Featured Products</b>
-        </h1>
-        <p className='text-gray-600 text-base md:text-lg lg:text-lg mt-2 text-center xl:text-left'>
-  Discover our curated selection of premium clothing, blending modern style with <br /> unparalleled comfort
-</p>
+                <h1 className='text-secondary text-2xl md:text-3xl lg:text-4xl font-bold text-center xl:text-left mb-3'>
+                    <b>Featured Products</b>
+                </h1>
+                <p className='text-gray-600 text-base md:text-lg lg:text-lg mt-2 text-center xl:text-left'>
+                    Discover our curated selection of premium clothing, blending modern style with <br /> unparalleled comfort
+                </p>
 
-        
-        {/* Filter Buttons */}
-        <div className='flex items-center gap-3 mt-4 flex-wrap'>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-black text-white text-sm font-medium hover:bg-gray-900 transition-colors'>
-            All
-          </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Mens
-          </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Ladies
-          </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Kids
-          </button>
-        </div>
-      </div>
+                
+                {/* Filter Buttons */}
+                <div className='flex items-center gap-3 mt-4 flex-wrap'>
+                    <button 
+                        onClick={() => filterProductsByCategory('All')}
+                        className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                            selectedCategory === 'All' 
+                            ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                    >
+                        All
+                    </button>
+                    
+                    {categoriesLoading ? (
+                        <div className="flex gap-3">
+                            {[1, 2, 3].map((item) => (
+                                <div key={item} className="px-5 py-2 rounded-full border border-gray-300 bg-gray-200 animate-pulse">
+                                    <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        categories.map((category) => (
+                            <button 
+                                key={category.id}
+                                onClick={() => filterProductsByCategory(category.name)}
+                                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                                    selectedCategory === category.name 
+                                    ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+                                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                }`}
+                            >
+                                {category.name}
+                            </button>
+                        ))
+                    )}
+                </div>
+
+                {/* Selected category info */}
+                {selectedCategory !== 'All' && (
+                    <div className="mt-3">
+                        <p className="text-gray-600 text-sm">
+                            Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} in {selectedCategory}
+                        </p>
+                    </div>
+                )}
+            </div>
+
             {isLoading ? (
                 <div className="col-span-2 flex justify-center items-center h-[50vh]">
                     <AppLoader />
                 </div>
-            ) : offerProducts.length === 0 ? (
-                <p className='col-span-5 flex items-center justify-center h-[50vh]'>No products available</p>
+            ) : filteredProducts.length === 0 ? (
+                <p className='col-span-5 flex items-center justify-center h-[50vh]'>
+                    {selectedCategory === 'All' 
+                        ? 'No featured products available' 
+                        : `No featured products available in ${selectedCategory}`
+                    }
+                </p>
             ) : (
                 <>
                     <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 lg:grid-cols-5 gap-5 pb-2'>
@@ -160,7 +218,6 @@ const OfferProducts = () => {
                                                 onError={(e) => (e.target.src = '/no-image.jpg')}
                                             />
                                         </div>
-
                                     </Link>
                                     <MdZoomOutMap
                                         onClick={() => handleOpenImageZoom(product.images, 0)}
@@ -178,9 +235,12 @@ const OfferProducts = () => {
                                         />
                                     )}
                                     <div className='mt-3'>
-                                        <h4 className='font-medium text-sm xl:text-lg lg:text-lg capitalize truncate w-40 xl:w-60 lg:w-60'>{product.title.slice(0, 15) + '...'}
+                                        <h4 className='font-medium text-sm xl:text-lg lg:text-lg capitalize truncate w-40 xl:w-60 lg:w-60'>
+                                            {product.title.slice(0, 15) + '...'}
                                         </h4>
-                                        <p className='text-black-200 capitalize text-xs xl:text-sm lg:text-sm truncate w-40 xl:w-60 lg:w-60'>{product.description.slice(0, 20) + '...'}</p>
+                                        <p className='text-black-200 capitalize text-xs xl:text-sm lg:text-sm truncate w-40 xl:w-60 lg:w-60'>
+                                            {product.description.slice(0, 20) + '...'}
+                                        </p>
                                         <div className='flex items-center gap-2 mt-2'>
                                             <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
                                                 ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
@@ -195,7 +255,7 @@ const OfferProducts = () => {
                         })}
                     </div>
 
-                    {offerProducts.length > 5 && (
+                    {filteredProducts.length > 5 && (
                         <div className='flex justify-center items-center pb-8'>
                             <Button
                                 onClick={() => setShowAllOffer(!showAllOffer)}

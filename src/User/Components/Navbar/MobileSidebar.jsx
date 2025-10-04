@@ -114,6 +114,13 @@ const MobileSidebar = ({ openDrawer, handleCloseDrawer }) => {
                         <li onClick={handleCloseDrawer}><Link to='/orders-tracking'>Order / Track Order</Link></li>
                     </ul>
                 </div>
+                <div className="my-8 p-0">
+                    <h2 className='text-sm font-medium tracking-wider'>CONTACT INFO</h2>
+                    <ul className='space-y-4 mt-5 text-gray-600 text-sm'>
+                        <li onClick={handleCloseDrawer}><Link to='/contact'>Contact Us</Link></li>
+                        
+                    </ul>
+                </div>
 
                 {token ? (
                     <div className="my-8 p-0">

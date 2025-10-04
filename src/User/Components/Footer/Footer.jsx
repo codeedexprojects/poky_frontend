@@ -132,11 +132,11 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className='border-t border-gray-800 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-4'>
           <p className='text-gray-400 text-sm'>
-            © 2024 POKY. All rights reserved.
+            © 2025 POKY. All rights reserved.
           </p>
-          <p className='text-gray-400 text-sm'>
+          {/* <p className='text-gray-400 text-sm'>
             Created By KaZudo Graphics
-          </p>
+          </p> */}
         </div>
       </div>
     </>

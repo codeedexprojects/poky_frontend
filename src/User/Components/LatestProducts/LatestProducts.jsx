@@ -14,7 +14,11 @@ import { UserNotLoginPopup } from '../UserNotLogin/UserNotLoginPopup';
 const LatestProducts = () => {
   const { BASE_URL, setFav, fetchWishlistProducts, setWishlist } = useContext(AppContext);
   const [latestProducts, setLatestProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [isLoading, setIsLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [heartIcons, setHeartIcons] = useState({}); // Store heart icon state for each product
   const [showAllLatest, setShowAllLatest] = useState(false);
   const [openImageModal, setOpenImageModal] = React.useState(false);
@@ -44,6 +48,22 @@ const LatestProducts = () => {
     setZoomImage({ images: productImages, currentIndex: index });
   }
 
+  // fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/user/category/get`);
+        setCategories(response.data);
+        setCategoriesLoading(false);
+      } catch (error) {
+        console.error(error);
+        console.log("Category data could not be fetched.");
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, [BASE_URL]);
+
   // fetch latest products
   const fetchLatestProducts = async () => {
     try {
@@ -51,14 +71,32 @@ const LatestProducts = () => {
       const response = await axios.get(`${BASE_URL}/user/products/view-products`, { params });
       const filteredProducts = response.data.filter(product => product.isLatestProduct);
       setLatestProducts(filteredProducts);
+      setFilteredProducts(filteredProducts); // Initialize filtered products with all latest products
       setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching offer products:", error);
+      console.error("Error fetching latest products:", error);
+      setIsLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchLatestProducts();
   }, []);
+
+  // Filter products by category
+  const filterProductsByCategory = (categoryName) => {
+    setSelectedCategory(categoryName);
+    
+    if (categoryName === 'All') {
+      setFilteredProducts(latestProducts);
+    } else {
+      const filtered = latestProducts.filter(product => 
+        product.category && product.category.name === categoryName
+      );
+      setFilteredProducts(filtered);
+    }
+    setShowAllLatest(false); // Reset view all when filter changes
+  };
 
   // add to wishlist
   const handleWishlist = async (productId, productTitle) => {
@@ -76,11 +114,9 @@ const LatestProducts = () => {
         toast.success(`${productTitle} added to wishlist`);
         setHeartIcons(prev => ({ ...prev, [productId]: true }));
         fetchWishlistProducts();
-        // setWishlist(prevFav => [...prevFav, { productId }]); 
       } else {
         toast.error(`${productTitle} removed from wishlist`);
         setHeartIcons(prev => ({ ...prev, [productId]: false }));
-        // setWishlist(prevFav => prevFav.filter(item => item.productId !== productId));
         fetchLatestProducts();
         fetchWishlistProducts();
       }
@@ -91,8 +127,8 @@ const LatestProducts = () => {
   };
 
   const visibleProducts = showAllLatest
-  ? latestProducts
-  : latestProducts.slice(0, screenWidth < 640 ? 6 : 5);
+    ? filteredProducts
+    : filteredProducts.slice(0, screenWidth < 640 ? 6 : 5);
 
 
   return (
@@ -102,24 +138,55 @@ const LatestProducts = () => {
           <b>Latest Products</b>
         </h1>
         <p className='text-gray-600 text-base md:text-lg lg:text-lg mt-2 text-center xl:text-left'>
-          Stand out with our latest collection-bold designs, premium fabrics, and <br /> street-ready fits. Once they’re gone, they’re gone. Don’t miss out!
+          Stand out with our latest collection-bold designs, premium fabrics, and <br /> street-ready fits. Once they're gone, they're gone. Don't miss out!
         </p>
         
         {/* Filter Buttons */}
         <div className='flex items-center gap-3 mt-4 flex-wrap'>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-black text-white text-sm font-medium hover:bg-gray-900 transition-colors'>
+          <button 
+            onClick={() => filterProductsByCategory('All')}
+            className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+              selectedCategory === 'All' 
+              ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+            }`}
+          >
             All
           </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Mens
-          </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Ladies
-          </button>
-          <button className='px-5 py-2 rounded-full border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors'>
-            Kids
-          </button>
+          
+          {categoriesLoading ? (
+            <div className="flex gap-3">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="px-5 py-2 rounded-full border border-gray-300 bg-gray-200 animate-pulse">
+                  <div className="h-4 w-16 bg-gray-300 rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            categories.map((category) => (
+              <button 
+                key={category.id}
+                onClick={() => filterProductsByCategory(category.name)}
+                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                  selectedCategory === category.name 
+                  ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
+                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {category.name}
+              </button>
+            ))
+          )}
         </div>
+
+        {/* Selected category info */}
+        {selectedCategory !== 'All' && (
+          <div className="mt-3">
+            <p className="text-gray-600 text-sm">
+              Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} in {selectedCategory}
+            </p>
+          </div>
+        )}
       </div>
 
       {
@@ -127,9 +194,14 @@ const LatestProducts = () => {
           <div className="col-span-2 flex justify-center items-center h-[50vh]">
             <AppLoader />
           </div>
-        ) : latestProducts.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <>
-            <p className='col-span-5 flex items-center justify-center h-[50vh]'>No products available</p>
+            <p className='col-span-5 flex items-center justify-center h-[50vh]'>
+              {selectedCategory === 'All' 
+                ? 'No latest products available' 
+                : `No latest products available in ${selectedCategory}`
+              }
+            </p>
           </>
         ) : (
           <>
@@ -193,7 +265,7 @@ const LatestProducts = () => {
               })}
             </div>
 
-            {latestProducts.length > 5 && (
+            {filteredProducts.length > 5 && (
               <div className='flex justify-center items-center pb-8'>
                 <Button
                   onClick={() => setShowAllLatest(!showAllLatest)}
