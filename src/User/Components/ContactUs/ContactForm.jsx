@@ -19,8 +19,48 @@ export default function ContactForm() {
     };
 
     const handleSubmit = () => {
-        console.log('Form submitted:', formData);
-        alert('Message sent successfully!');
+        // Validate required fields
+        if (!formData.firstName || !formData.phone || !formData.message) {
+            alert('Please fill in all required fields: First Name, Phone Number, and Message');
+            return;
+        }
+
+        // Format the message for WhatsApp
+        const whatsappMessage = `
+*New Contact Form Submission*
+
+*Name:* ${formData.firstName} ${formData.lastName}
+*Email:* ${formData.email || 'Not provided'}
+*Phone:* ${formData.phone}
+*Message:*
+${formData.message}
+
+*Sent via Poky Store Website*
+        `.trim();
+
+        // Encode the message for URL
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        
+        // WhatsApp number (remove spaces and special characters)
+        const whatsappNumber = '917994237001'; // +91 79942 37001 without + and spaces
+        
+        // Create WhatsApp URL
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+        
+        // Open WhatsApp in a new tab
+        window.open(whatsappUrl, '_blank');
+        
+        // Optional: Reset form after submission
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            message: ''
+        });
+        
+        // Optional: Show success message
+        alert('Redirecting to WhatsApp... Please send the pre-filled message to complete your inquiry.');
     };
 
     return (
@@ -86,13 +126,16 @@ export default function ContactForm() {
                                 {/* Name Fields */}
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm text-gray-600 mb-2">First Name</label>
+                                        <label className="block text-sm text-gray-600 mb-2">
+                                            First Name <span className="text-red-500">*</span>
+                                        </label>
                                         <input
                                             type="text"
                                             name="firstName"
                                             value={formData.firstName}
                                             onChange={handleChange}
                                             className="w-full border-b border-gray-300 focus:border-black outline-none py-2 transition"
+                                            required
                                         />
                                     </div>
                                     <div>
@@ -120,20 +163,25 @@ export default function ContactForm() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm text-gray-600 mb-2">Phone Number</label>
+                                        <label className="block text-sm text-gray-600 mb-2">
+                                            Phone Number <span className="text-red-500">*</span>
+                                        </label>
                                         <input
                                             type="tel"
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleChange}
                                             className="w-full border-b border-gray-300 focus:border-black outline-none py-2 transition"
+                                            required
                                         />
                                     </div>
                                 </div>
 
                                 {/* Message */}
                                 <div>
-                                    <label className="block text-sm text-gray-600 mb-2">Message</label>
+                                    <label className="block text-sm text-gray-600 mb-2">
+                                        Message <span className="text-red-500">*</span>
+                                    </label>
                                     <textarea
                                         name="message"
                                         value={formData.message}
@@ -141,6 +189,7 @@ export default function ContactForm() {
                                         placeholder="Write your message..."
                                         rows="4"
                                         className="w-full border-b border-gray-300 focus:border-black outline-none py-2 resize-none transition"
+                                        required
                                     ></textarea>
                                 </div>
 
@@ -150,8 +199,13 @@ export default function ContactForm() {
                                         onClick={handleSubmit}
                                         className="bg-black text-white px-12 py-3 rounded-md hover:bg-gray-800 transition font-medium"
                                     >
-                                        Send Message
+                                        Send via WhatsApp
                                     </button>
+                                </div>
+
+                                {/* Note */}
+                                <div className="text-sm text-gray-500 text-center">
+                                    <p>You'll be redirected to WhatsApp to send your message</p>
                                 </div>
                             </div>
                         </div>
