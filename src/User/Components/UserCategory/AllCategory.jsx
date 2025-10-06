@@ -235,10 +235,10 @@ const AllCategory = () => {
                                                 <p className='font-medium text-sm xl:text-lg lg:text-lg truncate capitalize'>{product.title}</p>
                                                 <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm truncate overflow-hidden whitespace-nowrap w-40 xl:w-56 lg:w-48 capitalize'>{product.description.slice(0, 17) + '...'}</p>
                                                 <div className='flex items-center gap-2 mt-2'>
-                                                    <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
+                                                    <p className='text-black text-sm xl:text-base lg:text-base font-semibold'>
                                                         ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
                                                     </p>
-                                                    <p className='text-black/70 text-sm xl:text-base lg:text-base line-through'>
+                                                    <p className='text-black/70 text-xs xl:text-sm lg:text-sm line-through'>
                                                         ₹{product.actualPrice % 1 >= 0.9 ? Math.ceil(product.actualPrice) : Math.floor(product.actualPrice)}
                                                     </p>
                                                 </div>

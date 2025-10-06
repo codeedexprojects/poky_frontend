@@ -69,7 +69,7 @@ const FeaturedProducts = () => {
     // fetch featured products
     const fetchFeaturedProducts = async () => {
         try {
-            const params = userId ? { userId } : {}; 
+            const params = userId ? { userId } : {};
             const response = await axios.get(`${BASE_URL}/user/products/view-products`, { params });
             const filteredProducts = response.data.filter(product => product.isFeaturedProduct);
             setFeaturedProducts(filteredProducts);
@@ -88,11 +88,11 @@ const FeaturedProducts = () => {
     // Filter products by category
     const filterProductsByCategory = (categoryName) => {
         setSelectedCategory(categoryName);
-        
+
         if (categoryName === 'All') {
             setFilteredProducts(featuredProducts);
         } else {
-            const filtered = featuredProducts.filter(product => 
+            const filtered = featuredProducts.filter(product =>
                 product.category && product.category.name === categoryName
             );
             setFilteredProducts(filtered);
@@ -145,17 +145,16 @@ const FeaturedProducts = () => {
 
                 {/* Filter Buttons */}
                 <div className='flex items-center gap-3 mt-4 flex-wrap'>
-                    <button 
+                    <button
                         onClick={() => filterProductsByCategory('All')}
-                        className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
-                            selectedCategory === 'All' 
-                            ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
-                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                        }`}
+                        className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === 'All'
+                                ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
                     >
                         All
                     </button>
-                    
+
                     {categoriesLoading ? (
                         <div className="flex gap-3">
                             {[1, 2, 3].map((item) => (
@@ -166,14 +165,13 @@ const FeaturedProducts = () => {
                         </div>
                     ) : (
                         categories.map((category) => (
-                            <button 
+                            <button
                                 key={category.id}
                                 onClick={() => filterProductsByCategory(category.name)}
-                                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
-                                    selectedCategory === category.name 
-                                    ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
-                                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                                }`}
+                                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === category.name
+                                        ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                    }`}
                             >
                                 {category.name}
                             </button>
@@ -198,8 +196,8 @@ const FeaturedProducts = () => {
             ) : filteredProducts.length === 0 ? (
                 <>
                     <p className='col-span-5 flex items-center justify-center h-[50vh]'>
-                        {selectedCategory === 'All' 
-                            ? 'No featured products available' 
+                        {selectedCategory === 'All'
+                            ? 'No featured products available'
                             : `No featured products available in ${selectedCategory}`
                         }
                     </p>
@@ -252,13 +250,14 @@ const FeaturedProducts = () => {
                                             {product.description.slice(0, 20) + '...'}
                                         </p>
                                         <div className='flex items-center gap-2 mt-2'>
-                                            <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
+                                            <p className='text-black text-sm xl:text-base lg:text-base font-semibold'>
                                                 ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
                                             </p>
-                                            <p className='text-black/70 text-sm xl:text-base lg:text-base line-through'>
+                                            <p className='text-black/70 text-xs xl:text-sm lg:text-sm line-through'>
                                                 ₹{product.actualPrice % 1 >= 0.9 ? Math.ceil(product.actualPrice) : Math.floor(product.actualPrice)}
                                             </p>
                                         </div>
+
                                     </div>
                                 </div>
                             )

@@ -95,7 +95,8 @@ const UserCarousel = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.8 }}
                       className="text-white font-black uppercase leading-tight mb-4"
-                      style={{ fontSize: 'clamp(2rem, 5vw, 4.5rem)', letterSpacing: '0.02em' }}
+                    style={{ fontSize: 'clamp(2.5rem, 6vw, 5.5rem)', letterSpacing: '0.02em' }}
+
                     >
                       {slider.title}
                     </motion.h1>
