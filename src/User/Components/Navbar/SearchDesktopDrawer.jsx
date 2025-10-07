@@ -95,6 +95,7 @@ export function SearchDesktopDrawer({ open, closeSearchDrawer }) {
                                     type="search"
                                     name="search"
                                     value={searchUser}
+
                                     onChange={(e) => setSearchUser(e.target.value)}
                                     placeholder='Search Products, Brands, Categories...'
                                     className='bg-transparent text-lg placeholder:text-gray-600 placeholder:text-lg font-light focus:outline-none text-secondary w-full'

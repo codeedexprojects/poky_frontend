@@ -33,7 +33,7 @@ const UserCarousel = () => {
     slidesToScroll: 1,
     autoplay: carousel.length > 1,
     speed: 1000,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 3000,
     dotsClass: "slick-dots custom-dots",
     customPaging: (i) => (
       <div className="w-12 h-1 bg-white/50 hover:bg-white transition-all duration-300 rounded-full"></div>

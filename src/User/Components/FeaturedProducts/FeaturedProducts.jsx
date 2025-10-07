@@ -148,8 +148,8 @@ const FeaturedProducts = () => {
                     <button
                         onClick={() => filterProductsByCategory('All')}
                         className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === 'All'
-                                ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
-                                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                            ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                             }`}
                     >
                         All
@@ -169,8 +169,8 @@ const FeaturedProducts = () => {
                                 key={category.id}
                                 onClick={() => filterProductsByCategory(category.name)}
                                 className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === category.name
-                                        ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
-                                        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                    ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                                     }`}
                             >
                                 {category.name}
@@ -221,7 +221,7 @@ const FeaturedProducts = () => {
                                                 src={product.images[0]}
                                                 alt={product.title}
                                                 className='w-full h-full object-cover rounded-xl shadow-md
-                                                transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105'
+                            transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105'
                                                 onError={(e) => e.target.src = '/no-image.jpg'}
                                             />
                                         </div>
@@ -246,9 +246,36 @@ const FeaturedProducts = () => {
                                             {product.title.slice(0, 15) + '...'}
                                         </h4>
                                         <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm capitalize truncate overflow-hidden 
-                                        whitespace-nowrap w-40 xl:w-60 lg:w-60'>
+                    whitespace-nowrap w-40 xl:w-60 lg:w-60'>
                                             {product.description.slice(0, 20) + '...'}
                                         </p>
+
+                                        {/* Review Section */}
+                                        <div className='flex items-center gap-2 mt-2'>
+                                            {/* Star Rating */}
+                                            <div className='flex items-center gap-1'>
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <svg
+                                                        key={star}
+                                                        className={`w-3 h-3 xl:w-4 xl:h-4 lg:w-4 lg:h-4 ${star <= Math.floor(product.averageRating || 0)
+                                                                ? 'text-yellow-400 fill-current'
+                                                                : product.averageRating && star === Math.ceil(product.averageRating) && product.averageRating % 1 !== 0
+                                                                    ? 'text-yellow-400 fill-current'
+                                                                    : 'text-gray-300'
+                                                            }`}
+                                                        viewBox="0 0 20 20"
+                                                    >
+                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                ))}
+                                                {/* Average Rating Number */}
+                                                <span className='text-xs xl:text-sm lg:text-sm text-gray-600 ml-1'>
+                                                    ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Price Section */}
                                         <div className='flex items-center gap-2 mt-2'>
                                             <p className='text-black text-sm xl:text-base lg:text-base font-semibold'>
                                                 ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
