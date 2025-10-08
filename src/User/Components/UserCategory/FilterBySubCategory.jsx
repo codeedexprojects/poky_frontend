@@ -13,7 +13,9 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
 
             try {
                 const response = await axios.get(`${BASE_URL}/user/subCategory/get`);
-                const filterSubCategory = response.data.filter(subcat => subcat.MainCategory.id === categoryId);
+                const filterSubCategory = response.data.filter(
+                    subcat => subcat.MainCategory.id === categoryId
+                );
                 setSubCategories(filterSubCategory);
             } catch (error) {
                 console.error("Error fetching subcategories:", error.response || error.message);
@@ -45,7 +47,7 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                     </button>
                 )}
             </div>
-            
+
             {/* Horizontal Scrollable for Mobile */}
             <div className="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar">
                 {subCategories.length > 0 ? (
@@ -54,34 +56,42 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                             key={subCategory.id}
                             onClick={() => handleSubCategoryClick(subCategory)}
                             className={`flex-shrink-0 flex flex-col items-center cursor-pointer transition-all duration-300 ${
-                                selectedSubCategory === subCategory.id 
-                                    ? 'transform scale-105' 
+                                selectedSubCategory === subCategory.id
+                                    ? 'transform scale-105'
                                     : 'hover:scale-105'
                             }`}
                         >
-                            <div className={`relative w-16 h-16 xl:w-20 xl:h-20 rounded-full overflow-hidden border-2 ${
-                                selectedSubCategory === subCategory.id 
-                                    ? 'border-primary shadow-lg' 
-                                    : 'border-gray-200 hover:border-gray-300'
-                            }`}>
-                                <img 
-                                    src={subCategory.SubImageUrl} 
-                                    alt={subCategory.title}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        e.target.src = '/no-image.jpg';
-                                    }}
-                                />
+                            {/* Circular Border Wrapper */}
+                            <div
+                                className={`relative w-16 h-16 xl:w-20 xl:h-20 rounded-full p-[3px] border-2 ${
+                                    selectedSubCategory === subCategory.id
+                                        ? 'border-[#a89160] shadow-md' // golden tan border
+                                        : 'border-gray-300 hover:border-[#a89160]'
+                                }`}
+                            >
+                                <div className="w-full h-full rounded-full overflow-hidden">
+                                    <img
+                                        src={subCategory.SubImageUrl}
+                                        alt={subCategory.title}
+                                        className="w-full h-full object-cover rounded-full"
+                                        onError={(e) => {
+                                            e.target.src = '/no-image.jpg';
+                                        }}
+                                    />
+                                </div>
+
                                 {selectedSubCategory === subCategory.id && (
-                                    <div className="absolute inset-0 bg-primary bg-opacity-20 rounded-full"></div>
+                                    <div className="absolute inset-0 rounded-full border-[3px] border-[#a89160]"></div>
                                 )}
                             </div>
-                            
-                            <span className={`mt-2 text-xs font-medium text-center capitalize px-3 py-1 rounded-full whitespace-nowrap ${
-                                selectedSubCategory === subCategory.id
-                                    ? 'bg-primary text-white font-semibold'
-                                    : 'bg-gray-100 text-gray-700'
-                            }`}>
+
+                            <span
+                                className={`mt-2 text-xs font-medium text-center capitalize px-3 py-1 rounded-full whitespace-nowrap ${
+                                    selectedSubCategory === subCategory.id
+                                        ? 'bg-[#a89160] text-white font-semibold'
+                                        : 'bg-gray-100 text-gray-700'
+                                }`}
+                            >
                                 {subCategory.title}
                             </span>
                         </div>

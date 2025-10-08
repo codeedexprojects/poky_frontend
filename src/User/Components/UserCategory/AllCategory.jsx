@@ -200,7 +200,7 @@ const AllCategory = () => {
                         <li className='col-span-1'><FilterByPrice handlePriceFilter={handlePriceFilter} /></li>
                     </ul>
 
-                     <div className='col-span-1'><FilterBySubCategory categoryId={productsCategory.id} handleSubCategory={handleSubCategory} /></div>
+                     <div className='col-span-1 mt-5'><FilterBySubCategory categoryId={productsCategory.id} handleSubCategory={handleSubCategory} /></div>
 
                     {/* Products */}
                     <div className="xl:p-10 mt-6">
