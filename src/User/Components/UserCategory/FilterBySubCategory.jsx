@@ -20,7 +20,7 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
             } catch (error) {
                 console.error("Error fetching subcategories:", error.response || error.message);
             }
-        };
+        }; 
 
         fetchSubCategories();
     }, [categoryId]);
