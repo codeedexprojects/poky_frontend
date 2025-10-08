@@ -49,23 +49,21 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
             </div>
 
             {/* Horizontal Scrollable for Mobile */}
-            <div className="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar">
+            <div className="flex space-x-5 overflow-x-auto pb-4 hide-scrollbar">
                 {subCategories.length > 0 ? (
                     subCategories.map((subCategory) => (
                         <div
                             key={subCategory.id}
                             onClick={() => handleSubCategoryClick(subCategory)}
-                            className={`flex-shrink-0 flex flex-col items-center cursor-pointer transition-all duration-300 ${
-                                selectedSubCategory === subCategory.id
-                                    ? 'transform scale-105'
-                                    : 'hover:scale-105'
-                            }`}
+                            className={`flex-shrink-0 flex flex-col items-center cursor-pointer transition-transform duration-300 transform-gpu 
+                                ${selectedSubCategory === subCategory.id ? 'scale-105' : 'hover:scale-105'}
+                                px-2 pt-1`}
                         >
                             {/* Circular Border Wrapper */}
                             <div
                                 className={`relative w-16 h-16 xl:w-20 xl:h-20 rounded-full p-[3px] border-2 ${
                                     selectedSubCategory === subCategory.id
-                                        ? 'border-[#a89160] shadow-md' // golden tan border
+                                        ? 'border-[#a89160] shadow-md'
                                         : 'border-gray-300 hover:border-[#a89160]'
                                 }`}
                             >
@@ -79,10 +77,6 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                                         }}
                                     />
                                 </div>
-
-                                {selectedSubCategory === subCategory.id && (
-                                    <div className="absolute inset-0 rounded-full border-[3px] border-[#a89160]"></div>
-                                )}
                             </div>
 
                             <span
