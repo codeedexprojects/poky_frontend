@@ -1,19 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-    Menu,
-    MenuHandler,
-    MenuList,
-    MenuItem,
-    Button,
-} from "@material-tailwind/react";
-import { IoIosArrowDown } from 'react-icons/io';
 import { AppContext } from '../../../StoreContext/StoreContext';
 import axios from 'axios';
 
 const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
     const { BASE_URL } = useContext(AppContext);
     const [subCategories, setSubCategories] = useState([]);
-    const [selectedSubCategoryName, setSelectedSubCategoryName] = useState("");
+    const [selectedSubCategory, setSelectedSubCategory] = useState(null);
 
     useEffect(() => {
         const fetchSubCategories = async () => {
@@ -21,8 +13,6 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
 
             try {
                 const response = await axios.get(`${BASE_URL}/user/subCategory/get`);
-                console.log("Subcategories response:", response.data);
-                // Filter subcategories based on the selected category ID
                 const filterSubCategory = response.data.filter(subcat => subcat.MainCategory.id === categoryId);
                 setSubCategories(filterSubCategory);
             } catch (error) {
@@ -31,45 +21,78 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
         };
 
         fetchSubCategories();
-    }, [categoryId]); // Re-run when the category ID changes
+    }, [categoryId]);
 
-    const handleCategorySelection = (subCategory) => {
-        setSelectedSubCategoryName(subCategory.title);
-        console.log("Selected Subcategory:", subCategory); // Debugging log
-        handleSubCategory(subCategory.id); // Trigger the parent handler with the subcategory ID
+    const handleSubCategoryClick = (subCategory) => {
+        setSelectedSubCategory(subCategory.id);
+        handleSubCategory(subCategory.id);
+    };
+
+    const clearSubCategoryFilter = () => {
+        setSelectedSubCategory(null);
+        handleSubCategory(null);
     };
 
     return (
-        <Menu>
-            <MenuHandler>
-                <Button
-                    variant="outlined"
-                    className="w-full shadow-none font-custom flex justify-between items-center py-2 px-3 
-                         border-black text-black font-medium rounded-3xl focus:outline-none"
-                >
-                    Filter By Collections
-                    <span className="text-xs capitalize bg-black ml-5 px-2 text-white rounded-md">
-                        {selectedSubCategoryName}
-                    </span>
-                    <IoIosArrowDown className="text-lg text-gray-800" />
-                </Button>
-            </MenuHandler>
-            <MenuList className="w-72 max-h-64 rounded-xl hide-scrollbar">
+        <div className="w-full">
+            <div className="flex items-center justify-between mb-4">
+                {selectedSubCategory && (
+                    <button
+                        onClick={clearSubCategoryFilter}
+                        className="text-sm text-primary hover:text-primary-dark font-medium"
+                    >
+                        Clear All
+                    </button>
+                )}
+            </div>
+            
+            {/* Horizontal Scrollable for Mobile */}
+            <div className="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar">
                 {subCategories.length > 0 ? (
                     subCategories.map((subCategory) => (
-                        <MenuItem
+                        <div
                             key={subCategory.id}
-                            onClick={() => handleCategorySelection(subCategory)}
-                            className="text-sm font-custom capitalize font-medium text-black cursor-pointer"
+                            onClick={() => handleSubCategoryClick(subCategory)}
+                            className={`flex-shrink-0 flex flex-col items-center cursor-pointer transition-all duration-300 ${
+                                selectedSubCategory === subCategory.id 
+                                    ? 'transform scale-105' 
+                                    : 'hover:scale-105'
+                            }`}
                         >
-                            {subCategory.title}
-                        </MenuItem>
+                            <div className={`relative w-16 h-16 xl:w-20 xl:h-20 rounded-full overflow-hidden border-2 ${
+                                selectedSubCategory === subCategory.id 
+                                    ? 'border-primary shadow-lg' 
+                                    : 'border-gray-200 hover:border-gray-300'
+                            }`}>
+                                <img 
+                                    src={subCategory.SubImageUrl} 
+                                    alt={subCategory.title}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        e.target.src = '/no-image.jpg';
+                                    }}
+                                />
+                                {selectedSubCategory === subCategory.id && (
+                                    <div className="absolute inset-0 bg-primary bg-opacity-20 rounded-full"></div>
+                                )}
+                            </div>
+                            
+                            <span className={`mt-2 text-xs font-medium text-center capitalize px-3 py-1 rounded-full whitespace-nowrap ${
+                                selectedSubCategory === subCategory.id
+                                    ? 'bg-primary text-white font-semibold'
+                                    : 'bg-gray-100 text-gray-700'
+                            }`}>
+                                {subCategory.title}
+                            </span>
+                        </div>
                     ))
                 ) : (
-                    <MenuItem className="text-sm text-gray-500">No subcategories available</MenuItem>
+                    <div className="w-full text-center py-2">
+                        <p className="text-gray-500 text-sm">No collections available</p>
+                    </div>
                 )}
-            </MenuList>
-        </Menu>
+            </div>
+        </div>
     );
 };
 

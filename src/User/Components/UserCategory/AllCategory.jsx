@@ -192,13 +192,15 @@ const AllCategory = () => {
                 {/* Filters - Optimized for mobile */}
                 <div className="px-3 py-4 xl:py-16 xl:px-32 lg:py-16 lg:px-32 bg-white">
                     <ul className='grid grid-cols-2 gap-2 xl:flex xl:items-center xl:space-y-0 xl:gap-5 xl:justify-center
-                    lg:flex lg:items-center lg:space-y-0 lg:gap-5 lg:justify-center'>
+                         lg:flex lg:items-center lg:space-y-0 lg:gap-5 lg:justify-center'>
                         <li className='col-span-1'><FilterByCategory handleCategoryFilter={handleCategoryFilter} /></li>
-                        <li className='col-span-1'><FilterBySubCategory categoryId={productsCategory.id} handleSubCategory={handleSubCategory} /></li>
+                       
                         <li className='col-span-1'><FilterBySize handleSizeFilter={handleSizeFilter} categoryId={productsCategory.id} /></li>
                         <li className='col-span-1'><FilterByMaterial handleMaterialFilter={handleMaterialFilter} categoryId={productsCategory.id} /></li>
                         <li className='col-span-1'><FilterByPrice handlePriceFilter={handlePriceFilter} /></li>
                     </ul>
+
+                     <div className='col-span-1'><FilterBySubCategory categoryId={productsCategory.id} handleSubCategory={handleSubCategory} /></div>
 
                     {/* Products */}
                     <div className="xl:p-10 mt-6">
