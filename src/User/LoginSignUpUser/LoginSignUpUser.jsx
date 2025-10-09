@@ -60,6 +60,16 @@ export function LoginSignUpUser() {
             return;
         }
 
+        // Validate email format for sign-up
+        if (!isLogin) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(loginFormData.email)) {
+                toast.error("Please enter a valid email address");
+                setIsSubmitting(false);
+                return;
+            }
+        }
+
         // Ensure privacy policy is checked for sign-up
         if (!isLogin && !isPrivacyChecked) {
             toast.error("To create an account, you must accept the Terms and Privacy Policy.", {
@@ -101,15 +111,15 @@ export function LoginSignUpUser() {
             // Handle sign-up response
             if (!isLogin) {
                 navigate('/otp', { 
-  state: { 
-    phone: loginFormData.phone,
-    name: loginFormData.name,
-    email: loginFormData.email,
-    password: loginFormData.password,
-    isWalkIn: isWalkIn
-  } 
-});
-                toast.success("Please verify OTP via the OTP message.");
+                    state: { 
+                        email: loginFormData.email,
+                        name: loginFormData.name,
+                        phone: loginFormData.phone,
+                        password: loginFormData.password,
+                        isWalkIn: isWalkIn
+                    } 
+                });
+                toast.success("Please check your email for OTP verification.");
             }
         } catch (error) {
             // Improved error handling
@@ -121,8 +131,6 @@ export function LoginSignUpUser() {
             
             toast.error(errorMessage);
             
-           
-           
         } finally {
             setIsSubmitting(false);
         }
@@ -151,23 +159,6 @@ export function LoginSignUpUser() {
                     onSubmit={handleAuthSubmit}
                 >
                     <div className="mb-4 flex flex-col gap-4">
-                        <div className="flex items-center border-[1px] rounded-lg !border-gray-300 bg-white">
-                            <span className="py-3 px-4 text-secondary cursor-default">+91</span>
-                            <Input
-                                name="phone"
-                                type='tel'
-                                value={loginFormData.phone}
-                                onChange={handleInputChange}
-                                placeholder="Phone Number"
-                                pattern="[0-9]{10,15}"
-                                maxLength={15}
-                                className="px-0 border-none placeholder:text-blue-gray-300 !font-custom placeholder:font-custom placeholder:opacity-100 focus:border-gray-300 focus:border-[1px]"
-                                labelProps={{
-                                    className: "before:content-none after:content-none",
-                                }}
-                            />
-                        </div>
-                        
                         {loginSignUpUser !== "login" && (
                             <>
                                 <Input
@@ -194,6 +185,23 @@ export function LoginSignUpUser() {
                                 />
                             </>
                         )}
+                        
+                        <div className="flex items-center border-[1px] rounded-lg !border-gray-300 bg-white">
+                            <span className="py-3 px-4 text-secondary cursor-default">+91</span>
+                            <Input
+                                name="phone"
+                                type='tel'
+                                value={loginFormData.phone}
+                                onChange={handleInputChange}
+                                placeholder="Phone Number"
+                                pattern="[0-9]{10,15}"
+                                maxLength={15}
+                                className="px-0 border-none placeholder:text-blue-gray-300 !font-custom placeholder:font-custom placeholder:opacity-100 focus:border-gray-300 focus:border-[1px]"
+                                labelProps={{
+                                    className: "before:content-none after:content-none",
+                                }}
+                            />
+                        </div>
                         
                         <div className="flex items-center border-[1px] rounded-lg pr-3 !border-gray-300 bg-white">
                             <Input

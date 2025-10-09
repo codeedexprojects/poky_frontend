@@ -10,11 +10,11 @@ export function Otp() {
   const inputRefs = React.useRef([]);
   const [otp, setOtp] = React.useState(Array(6).fill(""));
   const [isResending, setIsResending] = useState(false);
- const [countdownDate, setCountdownDate] = useState(Date.now() + 30 * 1000);
+  const [countdownDate, setCountdownDate] = useState(Date.now() + 30 * 1000);
   const { BASE_URL } = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const { phone, name, email, password, isWalkIn } = location.state || {};
+  const { email, name, phone, password, isWalkIn } = location.state || {};
 
   const handleComplete = () => {
     toast.error("Time's up! Please request a new OTP.");
@@ -64,25 +64,25 @@ export function Otp() {
     }
   }
 
-  // Resend OTP function - Fixed version
+  // Resend OTP function using the same register API
   const handleResendOtp = async () => {
     if (isResending) return;
     
     setIsResending(true);
     try {
       // Check if we have the required user data from location state
-      if (!phone) {
-        toast.error("Phone number not found. Please try signing up again.");
+      if (!email) {
+        toast.error("Email not found. Please try signing up again.");
         return;
       }
 
-      // Use the dedicated resend OTP endpoint if available, otherwise use register with all data
+      // Use the same register API to resend OTP
       const payload = {
         phone: phone,
-        ...(name && { name }),
-        ...(email && { email }),
-        ...(password && { password }),
-        ...(isWalkIn !== undefined && { isWalkIn })
+        name: name,
+        email: email,
+        password: password,
+        isWalkIn: isWalkIn
       };
 
       console.log("Resending OTP with payload:", payload);
@@ -96,7 +96,7 @@ export function Otp() {
       if (response.data) {
         // Reset countdown
         setCountdownDate(Date.now() + 300000);
-        toast.success("OTP resent successfully! Please check your phone.");
+        toast.success("OTP resent successfully! Please check your email.");
       }
     } catch (error) {
       console.error("Resend OTP error:", error);
@@ -106,40 +106,6 @@ export function Otp() {
                           "Failed to resend OTP. Please try again.";
       
       toast.error(errorMessage);
-
-      // If it's a password-related error, suggest going back to signup
-      if (errorMessage.includes("password") || errorMessage.includes("salt")) {
-        toast.error("Please go back and complete the signup process again.");
-      }
-    } finally {
-      setIsResending(false);
-    }
-  };
-
-  // Alternative: Use a dedicated resend OTP endpoint if available
-  const handleResendOtpAlternative = async () => {
-    if (isResending) return;
-    
-    setIsResending(true);
-    try {
-      // Try dedicated resend OTP endpoint first
-      const payload = { phone: phone };
-      
-      const response = await axios.post(`${BASE_URL}/user/auth/resend-otp`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.data) {
-        setCountdownDate(Date.now() + 300000);
-        toast.success("OTP resent successfully! Please check your phone.");
-      }
-    } catch (error) {
-      console.error("Alternative resend OTP error:", error);
-      
-      // If dedicated endpoint fails, fall back to original method
-      await handleResendOtp();
     } finally {
       setIsResending(false);
     }
@@ -154,7 +120,7 @@ export function Otp() {
     }
     try {
       const otpPayload = {
-        phone: phone,
+        email: email, // Changed from phone to email
         otp: otpValue,
       };
       
@@ -185,7 +151,7 @@ export function Otp() {
     if (completed) {
       return (
         <button
-          onClick={handleResendOtpAlternative} // Use alternative method first
+          onClick={handleResendOtp}
           disabled={isResending}
           className="text-blue-600 hover:text-blue-800 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
         >
@@ -210,7 +176,7 @@ export function Otp() {
           </Typography>
           <Typography color="gray" className="mt-3 xl:mt-1 lg:mt-1 font-normal font-custom text-secondary text-center 
           xl:text-lg lg:text-lg text-sm">
-            We have sent a verification code to <span className='font-bold'> +91 {phone}</span>
+            We have sent a verification code to <span className='font-bold'>{email}</span>
           </Typography>
           <div className="w-full max-w-sm mt-10 xl:mt-14 lg:mt-14 flex flex-col">
             <div className="my-4 flex items-center justify-center gap-2">
@@ -242,7 +208,7 @@ export function Otp() {
               color="blue-gray"
               className="flex items-center justify-center gap-1 text-center font-medium font-custom mb-4"
             >
-              Check text messages for your OTP
+              Check your email for the OTP
             </Typography>
 
             {/* Resend OTP Section */}
@@ -269,7 +235,22 @@ export function Otp() {
               Confirm
             </Button>
 
-            
+            {/* Alternative resend option */}
+            <div className="mt-6 text-center">
+              <Typography
+                variant="small"
+                className="text-gray-600 font-custom"
+              >
+                Having trouble receiving the OTP?{" "}
+                <button
+                  onClick={handleResendOtp}
+                  disabled={isResending}
+                  className="text-blue-600 hover:text-blue-800 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  {isResending ? "Resending..." : "Click here to resend"}
+                </button>
+              </Typography>
+            </div>
 
             {/* Back to signup option if resend fails */}
             <div className="mt-4 text-center">
