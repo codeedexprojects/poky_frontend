@@ -1,23 +1,24 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Input, Typography, Button, Card } from "@material-tailwind/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import { AppContext } from "../../StoreContext/StoreContext";
 import axios from "axios";
 import toast from "react-hot-toast";
-import Countdown from 'react-countdown'
+import Countdown from 'react-countdown';
 
 export function Otp() {
   const inputRefs = React.useRef([]);
   const [otp, setOtp] = React.useState(Array(6).fill(""));
-  const { BASE_URL } = useContext(AppContext)
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { phone } = location.state || {};
+  const [isResending, setIsResending] = useState(false);
+ const [countdownDate, setCountdownDate] = useState(Date.now() + 30 * 1000);
+  const { BASE_URL } = useContext(AppContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { phone, name, email, password, isWalkIn } = location.state || {};
 
-  // const handleComplete = () => {
-  //   toast.error("Time's up! Please request a new OTP.");
-  // };
+  const handleComplete = () => {
+    toast.error("Time's up! Please request a new OTP.");
+  };
 
   const handleChange = (index, value) => {
     const newOtp = [...otp];
@@ -57,13 +58,92 @@ export function Otp() {
     }
   };
 
-
   function handleBackspace(event, index) {
     if (event.key === "Backspace" && !event.target.value && index > 0) {
-      console.log(inputRefs.current[index - 1]);
       inputRefs.current[index - 1].focus();
     }
   }
+
+  // Resend OTP function - Fixed version
+  const handleResendOtp = async () => {
+    if (isResending) return;
+    
+    setIsResending(true);
+    try {
+      // Check if we have the required user data from location state
+      if (!phone) {
+        toast.error("Phone number not found. Please try signing up again.");
+        return;
+      }
+
+      // Use the dedicated resend OTP endpoint if available, otherwise use register with all data
+      const payload = {
+        phone: phone,
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(password && { password }),
+        ...(isWalkIn !== undefined && { isWalkIn })
+      };
+
+      console.log("Resending OTP with payload:", payload);
+
+      const response = await axios.post(`${BASE_URL}/user/auth/register`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.data) {
+        // Reset countdown
+        setCountdownDate(Date.now() + 300000);
+        toast.success("OTP resent successfully! Please check your phone.");
+      }
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.error ||
+                          "Failed to resend OTP. Please try again.";
+      
+      toast.error(errorMessage);
+
+      // If it's a password-related error, suggest going back to signup
+      if (errorMessage.includes("password") || errorMessage.includes("salt")) {
+        toast.error("Please go back and complete the signup process again.");
+      }
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  // Alternative: Use a dedicated resend OTP endpoint if available
+  const handleResendOtpAlternative = async () => {
+    if (isResending) return;
+    
+    setIsResending(true);
+    try {
+      // Try dedicated resend OTP endpoint first
+      const payload = { phone: phone };
+      
+      const response = await axios.post(`${BASE_URL}/user/auth/resend-otp`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.data) {
+        setCountdownDate(Date.now() + 300000);
+        toast.success("OTP resent successfully! Please check your phone.");
+      }
+    } catch (error) {
+      console.error("Alternative resend OTP error:", error);
+      
+      // If dedicated endpoint fails, fall back to original method
+      await handleResendOtp();
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   // verify otp
   const verifyOtp = async () => {
@@ -76,14 +156,14 @@ export function Otp() {
       const otpPayload = {
         phone: phone,
         otp: otpValue,
-      }
-      console.log(otpPayload)
+      };
+      
       const response = await axios.post(`${BASE_URL}/user/auth/register/verify-otp`, otpPayload, {
         headers: {
           'Content-Type': 'application/json',
         }
-      })
-      console.log(response.data);
+      });
+      
       if (response.data.token && response.data.user.userId) {
         localStorage.setItem("userToken", response.data.token);
         localStorage.setItem('userId', response.data.user.userId || '');
@@ -92,9 +172,34 @@ export function Otp() {
         navigate('/');
       }
     } catch (error) {
-      console.log(error);
+      const errorMessage = error.response?.data?.msg || 
+                          error.response?.data?.error ||
+                          "OTP verification failed. Please try again.";
+      
+      toast.error(errorMessage);
     }
-  }
+  };
+
+  // Countdown renderer
+  const countdownRenderer = ({ minutes, seconds, completed }) => {
+    if (completed) {
+      return (
+        <button
+          onClick={handleResendOtpAlternative} // Use alternative method first
+          disabled={isResending}
+          className="text-blue-600 hover:text-blue-800 font-medium disabled:text-gray-400 disabled:cursor-not-allowed"
+        >
+          {isResending ? "Resending..." : "Resend OTP"}
+        </button>
+      );
+    } else {
+      return (
+        <span className="text-gray-600">
+          Resend OTP in {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+        </span>
+      );
+    }
+  };
 
   return (
     <>
@@ -131,37 +236,56 @@ export function Otp() {
                 </React.Fragment>
               ))}
             </div>
+            
             <Typography
               variant="small"
               color="blue-gray"
-              className="flex items-center justify-center gap-1 text-center font-medium font-custom"
+              className="flex items-center justify-center gap-1 text-center font-medium font-custom mb-4"
             >
               Check text messages for your OTP
             </Typography>
 
-            {/* <div className='flex items-center justify-center gap-2'>
+            {/* Resend OTP Section */}
+            <div className='flex items-center justify-center gap-2 mb-6'>
               <Typography
                 variant="small"
                 className="text-center font-normal text-blue-gray-500 font-custom"
               >
-                Didn't get the OTP ? <span className="font-light">Resend SMS in
-                </span>
+                Didn't get the OTP?
               </Typography>
-              <div className='w-12'>
+              <div className='flex items-center'>
                 <Countdown
-                  date={Date.now() + 300000}  // 5 minutes from now
-                  renderer={({ minutes, seconds }) => (
-                    <p className="text-base font-bold text-primary">
-                      {String(minutes).padStart(2, "0")}:
-                      {String(seconds).padStart(2, "0")}
-                    </p>
-                  )}
-                // onComplete={handleComplete}
+                  date={countdownDate}
+                  renderer={countdownRenderer}
+                  onComplete={handleComplete}
                 />
               </div>
-            </div> */}
+            </div>
 
-            <Button onClick={verifyOtp} className='mt-8 bg-black text-sm font-normal capitalize font-custom w-full'>Confirm</Button>
+            <Button 
+              onClick={verifyOtp} 
+              className='mt-4 bg-black text-sm font-normal capitalize font-custom w-full'
+            >
+              Confirm
+            </Button>
+
+            
+
+            {/* Back to signup option if resend fails */}
+            <div className="mt-4 text-center">
+              <Typography
+                variant="small"
+                className="text-gray-500 font-custom"
+              >
+                Still having issues?{" "}
+                <Link 
+                  to="/signup" 
+                  className="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Go back to sign up
+                </Link>
+              </Typography>
+            </div>
           </div>
         </Card>
       </div>

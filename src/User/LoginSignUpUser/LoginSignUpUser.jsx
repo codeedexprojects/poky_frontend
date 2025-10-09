@@ -100,7 +100,15 @@ export function LoginSignUpUser() {
 
             // Handle sign-up response
             if (!isLogin) {
-                navigate('/otp', { state: { phone: loginFormData.phone } });
+                navigate('/otp', { 
+  state: { 
+    phone: loginFormData.phone,
+    name: loginFormData.name,
+    email: loginFormData.email,
+    password: loginFormData.password,
+    isWalkIn: isWalkIn
+  } 
+});
                 toast.success("Please verify OTP via the OTP message.");
             }
         } catch (error) {

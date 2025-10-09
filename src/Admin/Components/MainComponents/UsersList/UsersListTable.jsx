@@ -129,11 +129,14 @@ const UsersListTable = ({ userList, setUserList }) => {
                             <table className="w-full table-auto text-left border-collapse">
                                 <thead className="bg-quaternary">
                                     <tr>
+                                        {/* Add S/N header */}
+                                        <th className="border-b border-gray-300 px-4 py-3 text-center text-sm font-semibold text-secondary uppercase w-[50px]">
+                                            S/N
+                                        </th>
                                         {TABLE_HEAD.map((head, index) => (
                                             <th
                                                 key={index}
                                                 className="border-b border-gray-300 px-4 py-3 text-center text-sm font-semibold text-secondary uppercase w-[150px]"
-                                            // style={{ minWidth: "120px" }} // Adjust minWidth to ensure uniformity
                                             >
                                                 {head}
                                             </th>
@@ -144,9 +147,16 @@ const UsersListTable = ({ userList, setUserList }) => {
                                     {currentUserList.map((user, index) => {
                                         const isLast = index === currentUserList.length - 1;
                                         const classes = `${isLast ? "p-4 relative" : "p-4 border-b border-gray-300 relative"} text-center w-[150px] truncate`;
-                                        const firstAddress = user.addresses?.[0] || {}; // Safely access the first address
+                                        const firstAddress = user.addresses?.[0] || {};
+
+                                        // Calculate serial number based on current page
+                                        const serialNumber = (currentPage - 1) * itemsPerPage + index + 1;
+
                                         return (
                                             <tr key={user._id}>
+                                                {/* S/N column */}
+                                                <td className="p-4 text-center w-[50px]">{serialNumber}</td>
+
                                                 <td className={classes}>
                                                     <Typography
                                                         variant="small"
@@ -156,55 +166,36 @@ const UsersListTable = ({ userList, setUserList }) => {
                                                         {user.isFavorite === true && user.status === true ? <RiHeart3Fill className='text-primary' /> : null}
                                                     </Typography>
                                                     {user.status === false && (
-                                                        <p className='text-xs tracking-wider text-black font-bold absolute inset-0 flex
-                                                         justify-center items-end'>*suspended</p>
+                                                        <p className='text-xs tracking-wider text-black font-bold absolute inset-0 flex justify-center items-end'>*suspended</p>
                                                     )}
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal capitalize font-custom text-sm"
-                                                    >
+                                                    <Typography variant="small" className="font-normal capitalize font-custom text-sm">
                                                         {user.phone || "N/A"}
                                                     </Typography>
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal font-custom text-sm"
-                                                    >
+                                                    <Typography variant="small" className="font-normal font-custom text-sm">
                                                         {user.email || "N/A"}
                                                     </Typography>
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal capitalize font-custom text-sm"
-                                                    >
+                                                    <Typography variant="small" className="font-normal capitalize font-custom text-sm">
                                                         {firstAddress.address || "N/A"}
                                                     </Typography>
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal capitalize font-custom text-sm"
-                                                    >
+                                                    <Typography variant="small" className="font-normal capitalize font-custom text-sm">
                                                         {firstAddress.city || "N/A"}
                                                     </Typography>
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal capitalize font-custom text-sm"
-                                                    >
+                                                    <Typography variant="small" className="font-normal capitalize font-custom text-sm">
                                                         {firstAddress.state || "N/A"}
                                                     </Typography>
                                                 </td>
                                                 <td className={classes}>
-                                                    <Typography
-                                                        variant="small"
-                                                        className="font-normal font-custom text-xs"
-                                                    >
+                                                    <Typography variant="small" className="font-normal font-custom text-xs">
                                                         {firstAddress.pincode || "N/A"}
                                                     </Typography>
                                                 </td>
@@ -224,19 +215,15 @@ const UsersListTable = ({ userList, setUserList }) => {
                                                             >
                                                                 <MenuItem className="font-custom text-buttonBg hover:!text-buttonBg">View</MenuItem>
                                                             </Link>
-                                                            {/* <MenuItem className="font-custom text-processingBg hover:!text-processingBg">
-                                                            Suspend
-                                                        </MenuItem> */}
                                                             <MenuItem
                                                                 onClick={() => {
-                                                                    setSelectedUserId(user._id || user.id); // Set the selected user's ID
-                                                                    handleOpen("deleteModal"); // Open the modal
+                                                                    setSelectedUserId(user._id || user.id);
+                                                                    handleOpen("deleteModal");
                                                                 }}
                                                                 className="text-deleteBg font-custom"
                                                             >
                                                                 Delete
                                                             </MenuItem>
-
                                                         </MenuList>
                                                     </Menu>
                                                 </td>

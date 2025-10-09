@@ -9,7 +9,7 @@ import AppLoader from '../../../../Loader';
 import { useState } from 'react';
 import { ProductDetailsModal } from './ProductDetailsModal';
 
-const TABLE_HEAD = ["Product Name", "Description","Code", "Stock", "Price", "Orders", "Publish", "Action"];
+const TABLE_HEAD = ["Product Name", "Description", "Code", "Stock", "Price", "Orders", "Publish", "Action"];
 
 const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId, handleDeleteProduct }) => {
     const { open, handleOpen, modalType } = useContext(AppContext);
@@ -56,6 +56,16 @@ const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId
                                     <table className="w-full table-auto text-left border-collapse">
                                         <thead>
                                             <tr className='bg-quaternary'>
+                                                {/* S/N Header */}
+                                                <th className="border-b border-gray-300 p-3 text-center">
+                                                    <Typography
+                                                        variant="small"
+                                                        className="font-semibold uppercase text-secondary text-base leading-none font-custom"
+                                                    >
+                                                        S/N
+                                                    </Typography>
+                                                </th>
+
                                                 {TABLE_HEAD.map((head) => (
                                                     <th
                                                         key={head}
@@ -77,8 +87,22 @@ const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId
                                                 const classes = isLast
                                                     ? "p-4 text-center"
                                                     : "p-4 border-b border-gray-300 text-center";
+
+                                                // Calculate serial number based on current page
+                                                const serialNumber = (currentPage - 1) * itemsPerPage + index + 1;
+
                                                 return (
                                                     <tr key={product._id}>
+                                                        {/* S/N Column */}
+                                                        <td className={classes}>
+                                                            <Typography
+                                                                variant="small"
+                                                                className="font-normal font-custom text-sm"
+                                                            >
+                                                                {serialNumber}
+                                                            </Typography>
+                                                        </td>
+
                                                         <td className={classes}>
                                                             <div className='flex flex-col items-center gap-2'>
                                                                 <div className='w-[60px] h-[60px] rounded-md'>
@@ -88,7 +112,7 @@ const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId
                                                                     variant="small"
                                                                     className="font-normal font-custom text-sm capitalize"
                                                                 >
-                                                                     {product.title.length > 20 ? `${product.title.slice(0, 20)}...` : product.title}
+                                                                    {product.title.length > 20 ? `${product.title.slice(0, 20)}...` : product.title}
                                                                 </Typography>
                                                             </div>
                                                         </td>
@@ -121,7 +145,7 @@ const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId
                                                                 variant="small"
                                                                 className="font-normal font-custom text-sm"
                                                             >
-                                                              ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
+                                                                ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
                                                             </Typography>
                                                         </td>
                                                         <td className={classes}>
@@ -189,6 +213,7 @@ const ListView = ({ products, isLoading, selectedProductId, setSelectedProductId
                                         </tbody>
                                     </table>
                                 </CardBody>
+
                                 <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
                                     <Button
                                         variant="outlined"

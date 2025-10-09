@@ -76,7 +76,7 @@ const [chartToDelete, setChartToDelete] = useState(null);
             };
     
             const response = await axios.delete(
-                `https://poky-backend.onrender.com/api/admin/sizechart/delete/${chartToDelete._id}`,
+                `https://pokystore.in/api/admin/sizechart/delete/${chartToDelete._id}`,
                 { headers }
             );
     

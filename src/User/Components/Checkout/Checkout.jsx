@@ -111,11 +111,11 @@ const Checkout = () => {
     // handle razorpay
     const handleRazorpayPayment = (orderResponse) => {
         const options = {
-            key: "rzp_live_MrSkSujB02FR7y",
+            key: "rzp_live_RQW5bIanhHDdly",
             amount: orderResponse.amount,
             currency: orderResponse.currency,
             name: "POKY",
-            description: "Welcome to Poky COLLECTIONS, a fashion and lifestyle e-commerce platform located at 3rd Floor, Oberon Mall, Edappally, Ernakulam, Kerala - 682024.",
+            description: "Welcome to Poky Store",
             image: "/logo.png",
             order_id: orderResponse.razorpayOrderId,
             handler: async function (response) {
