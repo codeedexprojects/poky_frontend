@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import {
     Navbar,
     Typography,
@@ -13,11 +13,9 @@ import MobileSidebar from './MobileSidebar';
 import { CategoryMenu } from './CategoryMenu';
 import { Link, useLocation } from 'react-router-dom';
 import { UserProfile } from './UserProfile';
-import { useEffect } from 'react';
 import { SearchDesktopDrawer } from './SearchDesktopDrawer';
 import { UserNotLoginPopup } from '../UserNotLogin/UserNotLoginPopup';
 import MyWhatsapp from '../Whatsapp/Whatsapp';
-
 
 const NavList = () => {
     const location = useLocation();
@@ -103,6 +101,45 @@ const UserNavbar = () => {
 
     const token = localStorage.getItem("userToken")
 
+    // Extract Google signup details from URL parameters
+    useEffect(() => {
+        // Extract query parameters from the URL
+        const urlParams = new URLSearchParams(location.search);
+        const googleToken = urlParams.get("Token");
+        const googleRole = urlParams.get("role");
+        const googleUserId = urlParams.get("userId");
+        const googleName = urlParams.get("name");
+
+        // Debugging: Log extracted values
+        console.log("URL Params:", {
+            googleToken,
+            googleRole,
+            googleUserId,
+            googleName,
+            fullSearch: location.search,
+        });
+
+        // Store these details in local storage if they exist
+        if (googleToken) localStorage.setItem("userToken", googleToken);
+        if (googleRole) localStorage.setItem("role", googleRole);
+        if (googleUserId) localStorage.setItem("userId", googleUserId);
+        if (googleName) localStorage.setItem("name", googleName);
+
+        // Confirm what was stored
+        console.log("Stored in localStorage:", {
+            googleToken: localStorage.getItem("userToken"),
+            googleRole: localStorage.getItem("role"),
+            googleUserId: localStorage.getItem("userId"),
+            googleName: localStorage.getItem("name"),
+        });
+
+        // Optional: Clear URL parameters after storing to clean up the URL
+        if (googleToken || googleRole || googleUserId || googleName) {
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    }, [location.search]);
+
     // pages where navbar don't visible
     const noNavbar = ["/customer-reviews", "/write-review", "/add-delivery-address", "/edit-delivery-address", "/select-delivery-address",
         "/select-tracking", "/order", '/forget-password', '/reset-otp', '/new-password', '/terms-conditions', '/privacy-policy']
@@ -113,7 +150,6 @@ const UserNavbar = () => {
 
     return (
         <>
-         
             <div className="w-full bg-black text-white text-center text-xs py-1" >
                 Premium Quality Guaranteed
             </div>
@@ -218,6 +254,5 @@ const UserNavbar = () => {
         </>
     )
 }
-
 
 export default UserNavbar
