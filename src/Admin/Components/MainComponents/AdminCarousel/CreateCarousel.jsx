@@ -165,7 +165,7 @@ const CreateCarousel = ({ setAdminCarousel }) => {
                     </div>
 
                     {/* Link */}
-                    <div className='flex flex-col gap-1'>
+                    {/* <div className='flex flex-col gap-1'>
                         <label htmlFor="" className='font-normal text-base'>Carousel Link</label>
                         <input
                             type="url"
@@ -174,7 +174,7 @@ const CreateCarousel = ({ setAdminCarousel }) => {
                             placeholder='Enter URL starts with https:'
                             className='border-[1px] text-sm bg-gray-100/50 p-2 rounded-md placeholder:text-sm placeholder:font-light placeholder:text-gray-500 focus:outline-none'
                         />
-                    </div>
+                    </div> */}
 
                     {/* Category */}
                     <div className='flex flex-col gap-1'>

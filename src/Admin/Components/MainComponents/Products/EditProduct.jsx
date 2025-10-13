@@ -505,6 +505,8 @@ const EditProduct = () => {
 
             const token = localStorage.getItem("token");
             const imagePayload = { imageName: image };
+            console.log("Image Payload:", imagePayload);
+
 
             const response = await axios.post(
                 `${BASE_URL}/admin/products/delete-product-image/${initialProducts?._id}`,

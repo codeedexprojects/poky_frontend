@@ -196,12 +196,17 @@ const ProductSpecifications = () => {
               label="Specification Type"
               value={selectedType}
               onChange={(value) => setSelectedType(value)}
+              className="max-h-48 overflow-y-auto"
+              menuProps={{
+                className: "max-h-48 overflow-y-auto"
+              }}
             >
               {specificationTypes.map(type => (
                 <Option key={type.value} value={type.value}>{type.label}</Option>
               ))}
             </Select>
           </div>
+
 
           <Input
             label="Specification Name"

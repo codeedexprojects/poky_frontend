@@ -41,6 +41,8 @@ const ProductDetails = () => {
     const [zoomImage, setZoomImage] = useState(null);
     const [openUserNotLogin, setOpenUserNotLogin] = useState(false);
     const [allSizeCharts, setAllSizeCharts] = useState([]);
+    const [descExpanded, setDescExpanded] = useState(false);
+
 
     const userId = localStorage.getItem('userId');
     const userToken = localStorage.getItem('userToken');
@@ -434,7 +436,23 @@ const ProductDetails = () => {
                                     <p className='text-xs xl:text-sm lg:text-sm'>({totalReviews})</p>
                                 </div>
                             </div>
-                            <p className='text-gray-600 text-xs capitalize xl:text-sm lg:text-sm mt-3'>{productDetails.description}</p>
+                            <div className='mt-3 text-gray-600 text-xs capitalize xl:text-sm lg:text-sm'>
+                                {productDetails?.description
+                                    ? (descExpanded || productDetails.description.length <= 150
+                                        ? productDetails.description
+                                        : `${productDetails.description.slice(0, 150)}...`)
+                                    : 'No description available.'}
+
+                                {productDetails?.description && productDetails.description.length > 150 && (
+                                    <span
+                                        onClick={() => setDescExpanded(!descExpanded)}
+                                        className='text-blue-600 cursor-pointer ml-1 underline'
+                                    >
+                                        {descExpanded ? 'View Less' : 'View More'}
+                                    </span>
+                                )}
+                            </div>
+
                             <div>
 
                                 <div className="flex items-center justify-between xl:justify-normal lg:justify-normal xl:gap-10 lg:gap-10 mt-2">
@@ -480,7 +498,9 @@ const ProductDetails = () => {
                                             <li
                                                 key={color._id}
                                                 onClick={() => handleColorClick(color.color)}
-                                                className={`cursor-pointer text-3xl relative flex items-center justify-center ${selectedColor.includes(color.color) ? 'text-black' : ''}`}
+                                                className={`cursor-pointer text-3xl relative flex items-center justify-center 
+          rounded-full
+          border-2 border-black ${selectedColor === color.color ? 'ring-2 ring-black' : ''}`} // <-- black border always
                                             >
                                                 {selectedColor === color.color && (
                                                     <TiTick className={`absolute text-3xl p-1 rounded-full bg-black/10 ${getContrastYIQ(color.color)}`} />
@@ -490,6 +510,7 @@ const ProductDetails = () => {
                                         ))}
                                     </ul>
                                 </div>
+
 
                                 {/* Select Size */}
                                 <div className='mt-4'>
