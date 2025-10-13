@@ -1,243 +1,135 @@
-import React, { useContext } from 'react'
-import { IoIosArrowBack } from 'react-icons/io'
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { AppContext } from '../../../StoreContext/StoreContext';
-import { ViewCategoryDrawer } from './ViewCategoryDrawer';
-import { useState } from 'react';
-import { useEffect } from 'react';
 import axios from 'axios';
-import { RiHeart3Fill, RiHeart3Line, RiSearch2Line } from 'react-icons/ri';
 import AppLoader from '../../../Loader';
-import toast from 'react-hot-toast';
-import { UserNotLoginPopup } from '../UserNotLogin/UserNotLoginPopup';
-import { Chip } from '@material-tailwind/react';
-import { MdZoomOutMap } from 'react-icons/md';
-import { ImageZoomModal } from '../ImageZoomModal/ImageZoomModal';
+import { motion } from 'framer-motion';
+import { ArrowRight, Home } from 'lucide-react';
 
-const ViewAllCategory = () => {
-    const navigate = useNavigate();
-    const { handleOpenBottomDrawer, BASE_URL, fetchWishlistProducts } = useContext(AppContext);
-    const [allProducts, setAllProducts] = useState([])
-    const [isLoading, setIsLoading] = useState(true);
-    const [searchProducts, setSearchProducts] = useState('');
-    const [heartIcons, setHeartIcons] = useState({});
-    const [filteredProducts, setFilteredProducts] = useState([]);
-    const [noProductsFound, setNoProductsFound] = useState(false);
-    // const [activeFilters, setActiveFilters] = useState(false);
-    const [selectedFilters, setSelectedFilters] = useState({
-        price: [],
-        category: [],
-        size: [],
-        material: []
-    });
-    const [openImageModal, setOpenImageModal] = React.useState(false);
-    const [zoomImage, setZoomImage] = useState(null);
-    const [openUserNotLogin, setOpenUserNotLogin] = useState(false);
+const ViewAllCategories = () => {
+  const { BASE_URL } = useContext(AppContext);
+  const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
 
-    const userId = localStorage.getItem('userId')
-
-    // handle non logged users modal
-    const handleOpenUserNotLogin = () => {
-        setOpenUserNotLogin(!openUserNotLogin);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/user/category/get`);
+        setCategories(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+      }
     };
+    fetchCategories();
+  }, [BASE_URL]);
 
+  return (
+    <div className='min-h-screen bg-gray-50 py-8 md:py-12 px-4 sm:px-6 lg:px-8'>
+      {/* Breadcrumb */}
+      <div className='max-w-7xl mx-auto mb-8'>
+        <nav className='flex items-center space-x-2 text-sm text-gray-600 mb-6'>
+          <Link to='/' className='hover:text-gray-900 transition-colors'>
+            <Home className='w-4 h-4' />
+          </Link>
+          <span className='text-gray-400'>/</span>
+          <Link to='/' className='hover:text-gray-900 transition-colors'>
+            Home
+          </Link>
+          <span className='text-gray-400'>/</span>
+          <span className='text-gray-900 font-medium'>All Categories</span>
+        </nav>
 
-    //handle image zoom
-    const handleOpenImageZoom = (productImages, index) => {
-        setOpenImageModal(!openImageModal);
-        setZoomImage({ images: productImages, currentIndex: index });
-    }
+        {/* Header */}
+       
+      </div>
 
-
-    // fetch all products
-    const fetchAllProducts = async () => {
-        try {
-            const params = userId ? { userId } : {};
-            const response = await axios.get(`${BASE_URL}/user/products/view-products`, { params })
-            setAllProducts(response.data)
-            setFilteredProducts(response.data);
-            setIsLoading(false)
-            console.log(response.data);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false)
-        }
-    }
-    useEffect(() => {
-        fetchAllProducts()
-    }, [])
-
-    // search products
-    const fetchSearchedProducts = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`${BASE_URL}/user/products/products/search?name=${searchProducts}`);
-            setAllProducts(response.data);
-            setFilteredProducts(response.data)
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchSearchedProducts()
-    }, [searchProducts]);
-
-    // add to wishlist
-    const handleWishlist = async (productId, productTitle) => {
-        try {
-            if (!userId) {
-                handleOpenUserNotLogin();
-                return;
-            }
-            const payload = { userId, productId };
-
-            const response = await axios.post(`${BASE_URL}/user/wishlist/add`, payload);
-            console.log(response.data);
-
-            if (response.data.isInWishlist) {
-                toast.success(`${productTitle} added to wishlist`);
-                setHeartIcons(prev => ({ ...prev, [productId]: true }));
-                fetchWishlistProducts();
-            } else {
-                toast.error(`${productTitle} removed from wishlist`);
-                setHeartIcons(prev => ({ ...prev, [productId]: false }));
-                fetchAllProducts();
-                fetchSearchedProducts();
-                fetchWishlistProducts();
-            }
-
-        } catch (error) {
-            throw new Error(error)
-        }
-    };
-
-    console.log(filteredProducts);
-
-
-    return (
-        <>
-            <div className="p-4 xl:py-16 xl:px-32 lg:py-16 lg:px-32 bg-white h-[calc(100vh-4rem)] pb-20 overflow-y-auto hide-scrollbar">
-                <h1 className="flex items-center gap-1 text-lg xl:text-xl lg:text-xl font-medium cursor-pointer" onClick={() => navigate(-1)}>
-                    <IoIosArrowBack className="text-secondary text-2xl cursor-pointer" /> Back
-                </h1>
-                <div className="flex items-center justify-center gap-2 mt-5 ">
-                    <div className='w-96 bg-searchUser flex items-center gap-2 rounded-lg text-sm p-2'>
-                        <RiSearch2Line className='text-gray-600 text-xl' />
-                        <input
-                            type="search"
-                            name="search"
-                            id=""
-                            value={searchProducts}
-                            onChange={(e) => setSearchProducts(e.target.value)}
-                            placeholder='Search products'
-                            className='w-full bg-transparent placeholder:font-normal placeholder:text-gray-700 focus:outline-none'
-                        />
+      {isLoading ? (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <AppLoader />
+        </div>
+      ) : (
+        <div className='max-w-7xl mx-auto'>
+          {/* Categories Grid */}
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8'>
+            {categories.map((category, index) => (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
+              >
+                <Link
+                  to={{ pathname: "/all-category" }}
+                  state={{ category }}
+                  className="block"
+                >
+                  <div className="relative h-64 md:h-72 overflow-hidden">
+                    <img
+                      src={category?.imageUrl}
+                      alt={category.name || 'Category Image'}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                      onError={(e) => (e.target.src = '/no-image.jpg')}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                  </div>
+                  <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                    <div></div>
+                    <div className="flex items-end justify-between gap-4">
+                      <div className="flex flex-col justify-end">
+                        <h3 className="text-white text-xl md:text-2xl font-bold mb-2 capitalize">
+                          {category.name}
+                        </h3>
+                        <p className="text-white/90 text-sm line-clamp-2">
+                          {category.description ||
+                            `Explore fashion picks crafted to keep you stylish, confident, and ahead of the trend`}
+                        </p>
+                      </div>
+                      <button className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/40 text-white px-4 py-2 rounded-full hover:bg-white/30 transition-all duration-300 flex-shrink-0">
+                        <span className="text-sm font-medium">Shop</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
-                    <div onClick={handleOpenBottomDrawer} className='bg-searchUser p-2 rounded-lg relative'>
-                        <div className='w-5 h-5 cursor-pointer'>
-                            <img src="/filter.png" alt="" className='w-full h-full' />
-                        </div>
-                        {(selectedFilters.price.length > 0 ||
-                            selectedFilters.category.length > 0 ||
-                            selectedFilters.size.length > 0) && (
-                                <div className='bg-black w-3 h-3 rounded-full absolute -top-1 -right-1'></div>
-                            )}
-                    </div>
-                </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
 
-                <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-5 lg:grid-cols-5 gap-5 mt-10'>
-                    {
-                        isLoading ? (
-                            <div className="col-span-5 flex justify-center items-center h-[50vh]">
-                                <AppLoader />
-                            </div>
-                        ) : noProductsFound ? (
-                            <div className="col-span-5 flex justify-center items-center h-[50vh]">
-                                <p className="text-sm text-secondary">No products found for the selected filters.</p>
-                            </div>
-                        ) : (
-                            <>
-                                {filteredProducts.map((product, index) => {
-                                    return (
-                                        <div className='group relative' key={index}>
-                                            <Link
-                                                 to={`/product-details/${product._id}/${product.category._id}`}
-                                                state={{
-                                                    productId: product._id,
-                                                    categoryId: product.category._id
-                                                }}
-                                                className="cursor-pointer"
-                                            >
-                                                <div className='w-full h-52 xl:h-80 lg:h-80 relative rounded-xl overflow-hidden'>
-                                                    <img src={product.images[0]} alt={product.title}
-                                                        className='w-full h-full object-cover rounded-xl shadow-md
-                                            transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105'
-                                                    />
-                                                </div>
-                                            </Link>
-                                            <MdZoomOutMap
-                                                onClick={() => handleOpenImageZoom(product.images, 0)}
-                                                className='absolute top-2 left-2 cursor-pointer text-gray-600 bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                            />
-                                            {product.isInWishlist || heartIcons[product._id] ? (
-                                                <RiHeart3Fill
-                                                    onClick={() => handleWishlist(product._id, product.title)}
-                                                    className='absolute top-2 right-2 cursor-pointer text-primary bg-white w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                                />
-                                            ) : (
-                                                <RiHeart3Line
-                                                    onClick={() => handleWishlist(product._id, product.title)}
-                                                    className='absolute top-2 right-2 cursor-pointer bg-white text-gray-600 w-7 h-7 xl:w-8 xl:h-8 lg:w-8 lg:h-8 p-1 rounded-full shadow-md'
-                                                />
-                                            )}
-                                            <div className='mt-3'>
-                                                <h4 className='font-medium text-sm xl:text-lg lg:text-lg capitalize truncate w-40 xl:w-60 lg:w-60'>{product.title.slice(0, 15) + '...'}</h4>
-                                                <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm capitalize truncate overflow-hidden 
-                                                whitespace-nowrap w-40 xl:w-60 lg:w-60'>{product.description.slice(0, 15) + '...'}</p>
-                                                <div className='flex items-center gap-2 mt-2'>
-                                                    <p className='text-black text-base xl:text-xl lg:text-xl font-semibold'>
-                                                        ₹{product.offerPrice % 1 >= 0.9 ? Math.ceil(product.offerPrice) : Math.floor(product.offerPrice)}
-                                                    </p>
-                                                    <p className='text-black/70 text-sm xl:text-base lg:text-base line-through'>
-                                                        ₹{product.actualPrice % 1 >= 0.9 ? Math.ceil(product.actualPrice) : Math.floor(product.actualPrice)}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                                }
-                            </>
-                        )
-                    }
-                </div>
-            </div >
+          {/* Empty State */}
+          {categories.length === 0 && !isLoading && (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-4xl">📦</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Categories Available</h3>
+              <p className="text-gray-600 mb-6">We're working on adding new categories soon.</p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition-colors"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                Back to Home
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
-            <ViewCategoryDrawer
-                setFilteredProducts={setFilteredProducts}
-                allProducts={allProducts}
-                setNoProductsFound={setNoProductsFound}
-                selectedFilters={selectedFilters}
-                setSelectedFilters={setSelectedFilters}
-            />
-
-            <UserNotLoginPopup
-                open={openUserNotLogin}
-                handleOpen={handleOpenUserNotLogin}
-            />
-
-
-            <ImageZoomModal
-                open={openImageModal}
-                handleOpen={handleOpenImageZoom}
-                zoomImage={zoomImage}
-            />
-        </>
-    )
+      {/* Back to Home */}
+      <div className='max-w-7xl mx-auto mt-12 text-center'>
+        <Link
+          to='/'
+          className='inline-flex items-center gap-2 text-black text-lg font-semibold hover:gap-3 transition-all duration-300 underline underline-offset-4'
+        >
+          <ArrowRight className='w-5 h-5 rotate-180' />
+          Back to Home
+        </Link>
+      </div>
+    </div>
+  );
 }
 
-export default ViewAllCategory
+export default ViewAllCategories;
