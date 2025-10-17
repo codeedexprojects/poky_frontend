@@ -18,8 +18,8 @@ const AddProduct = () => {
     const navigate = useNavigate()
     const [attributeFields, setAttributeFields] = useState([{ color: "", sizes: [{ size: "", stock: "" }] }]);
     const [productTitle, setProductTitle] = useState('')
-    const [productCategory, setProductCategory] = useState('')
-    const [productSubCategory, setProductSubCategory] = useState('')
+    const [productCategory, setProductCategory] = useState([]) // Changed to array
+    const [productSubCategory, setProductSubCategory] = useState([]) // Changed to array
     const [productCode, setProductCode] = useState('')
     const [productActualPrice, setProductActualPrice] = useState('')
     const [productDiscount, setProductDiscount] = useState('')
@@ -206,7 +206,6 @@ const AddProduct = () => {
         fetchCategories();
     }, [BASE_URL])
 
-
     // price computation
     useEffect(() => {
         const actual = parseFloat(productActualPrice);
@@ -226,17 +225,31 @@ const AddProduct = () => {
         // optional: if actualPrice is changed and both discount/offer exist, you can update accordingly.
     }, [productActualPrice, productDiscount, productOfferPrice, lastChanged]);
 
+    // Handle category selection (multiple)
+    const handleCategoryChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setProductCategory(selectedOptions);
+        
+        // Reset subcategories when categories change
+        setProductSubCategory([]);
+    };
 
+    // Handle subcategory selection (multiple)
+    const handleSubCategoryChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setProductSubCategory(selectedOptions);
+    };
 
-    // subcategory display based on category id
+    // subcategory display based on selected categories
     useEffect(() => {
-        if (productCategory) {
+        if (productCategory.length > 0) {
             const filtered = subCategories.filter(
-                (subcategory) => subcategory.category._id === productCategory
+                (subcategory) => productCategory.includes(subcategory.category._id)
             );
             setFilteredSubCategories(filtered);
         } else {
             setFilteredSubCategories([]);
+            setProductSubCategory([]); // Clear subcategories when no categories selected
         }
     }, [productCategory, subCategories]);
 
@@ -270,6 +283,17 @@ const AddProduct = () => {
             } else {
                 setImageError(false);
             }
+
+            // Validate categories and subcategories
+            if (productCategory.length === 0) {
+                toast.error("Please select at least one category");
+                return;
+            }
+            if (productSubCategory.length === 0) {
+                toast.error("Please select at least one subcategory");
+                return;
+            }
+
             let hasValidationErrors = false;
 
             const validatedAttributes = attributeFields.map(field => {
@@ -300,16 +324,23 @@ const AddProduct = () => {
             });
 
             // Validate inputs
-            if (!productTitle.trim() || !productCategory.trim()) {
-                alert("Product title and category are required");
+            if (!productTitle.trim()) {
+                alert("Product title is required");
                 return;
             }
 
             const productFormData = new FormData();
             productFormData.append('folder', 'Products');
             productFormData.append('title', productTitle);
-            productFormData.append('category', productCategory);
-            productFormData.append('subcategory', productSubCategory);
+            
+            // Append categories and subcategories as arrays
+            productCategory.forEach(categoryId => {
+                productFormData.append('category', categoryId);
+            });
+            productSubCategory.forEach(subcategoryId => {
+                productFormData.append('subcategory', subcategoryId);
+            });
+            
             productFormData.append('product_Code', productCode);
             productFormData.append('actualPrice', productActualPrice);
             productFormData.append('discount', productDiscount);
@@ -368,7 +399,6 @@ const AddProduct = () => {
                 });
             }
 
-
             // Debugging: Log the FormData
             for (const [key, value] of productFormData.entries()) {
                 console.log(key, value);
@@ -385,8 +415,8 @@ const AddProduct = () => {
             navigate(-1)
             // Reset form
             setProductTitle('');
-            setProductCategory('');
-            setProductSubCategory('');
+            setProductCategory([]);
+            setProductSubCategory([]);
             setProductCode('');
             setProductOfferPrice(null);
             setProductActualPrice('');
@@ -419,7 +449,6 @@ const AddProduct = () => {
         }
     }
 
-
     const handleAddColorField = () => {
         setAttributeFields([...attributeFields, { color: "", sizes: [{ size: "", stock: "" }] }]);
     };
@@ -433,13 +462,11 @@ const AddProduct = () => {
         }
     };
 
-
     const handleAddSizeField = (colorIndex) => {
         const updatedFields = [...attributeFields];
         updatedFields[colorIndex].sizes.push({ size: "", stock: "" });
         setAttributeFields(updatedFields);
     };
-
 
     const handleDeleteSizeField = (colorIndex, sizeIndex) => {
         const updatedFields = [...attributeFields];
@@ -452,7 +479,6 @@ const AddProduct = () => {
 
         setAttributeFields(updatedFields);
     };
-
 
     const handleSizeFieldChange = (colorIndex, sizeIndex, key, value) => {
         const updatedFields = [...attributeFields];
@@ -470,7 +496,6 @@ const AddProduct = () => {
         updatedFields[index][key] = value;
         setAttributeFields(updatedFields);
     };
-
 
     return (
         <>
@@ -499,59 +524,100 @@ const AddProduct = () => {
                                      focus:outline-none'/>
                         </div>
 
-                        {/* category */}
+                        {/* category - Updated for multiple selection */}
                         <div className='flex justify-between items-center gap-2'>
                             <div className='flex flex-col gap-1 w-full'>
-                                <label className='font-normal text-base'>Product Category</label>
+                                <label className='font-normal text-base'>Product Categories</label>
                                 <select
-                                    name="selectField"
+                                    name="category"
                                     value={productCategory}
-                                    onChange={(e) => setProductCategory(e.target.value)}
-                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer"
+                                    onChange={handleCategoryChange}
+                                    multiple
+                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer h-32"
                                 >
-                                    <option value="Option 1">Select Category</option>
+                                    <option value="" disabled>Select Categories (Multiple)</option>
                                     {
                                         categories.map((category) => (
                                             <option key={category.id} value={category.id} className='capitalize'>{category.name}</option>
                                         ))
                                     }
                                 </select>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Hold Ctrl/Cmd to select multiple categories
+                                </p>
+                                {productCategory.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-xs font-medium text-gray-700">Selected Categories:</p>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {productCategory.map(catId => {
+                                                const category = categories.find(c => c.id === catId);
+                                                return category ? (
+                                                    <span key={catId} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                        {category.name}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            {/* subcategory */}
+                            {/* subcategory - Updated for multiple selection */}
                             <div className='flex flex-col gap-1 w-full'>
-                                <label className='font-normal text-base'>Sub Category</label>
+                                <label className='font-normal text-base'>Sub Categories</label>
                                 <select
-                                    name="selectField"
+                                    name="subcategory"
                                     value={productSubCategory}
-                                    onChange={(e) => setProductSubCategory(e.target.value)}
-                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer"
+                                    onChange={handleSubCategoryChange}
+                                    multiple
+                                    disabled={productCategory.length === 0}
+                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer h-32"
                                 >
-                                    <option value="Option 1">Select SubCategory</option>
+                                    <option value="" disabled>
+                                        {productCategory.length === 0 ? "Select categories first" : "Select SubCategories (Multiple)"}
+                                    </option>
                                     {
                                         filteredSubCategories.map((subcategory) => (
                                             <option key={subcategory._id} value={subcategory._id} className='capitalize'>{subcategory.title}</option>
                                         ))
                                     }
-
                                 </select>
-                            </div>
-
-                            {/* product code */}
-                            <div className='flex flex-col gap-1 w-full'>
-                                <label htmlFor="" className='font-normal text-base'>Product code</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={productCode}
-                                    onChange={(e) => setProductCode(e.target.value)}
-                                    id=""
-                                    placeholder='Enter Product code'
-                                    className='border-[1px] w-full
-                                    bg-gray-100/50 p-2 uppercase rounded-md placeholder:text-sm placeholder:font-light placeholder:text-gray-500
-                                     focus:outline-none placeholder:capitalize'/>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Hold Ctrl/Cmd to select multiple subcategories
+                                </p>
+                                {productSubCategory.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-xs font-medium text-gray-700">Selected Subcategories:</p>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {productSubCategory.map(subId => {
+                                                const subcategory = filteredSubCategories.find(s => s._id === subId);
+                                                return subcategory ? (
+                                                    <span key={subId} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                                        {subcategory.title}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* product code */}
+                        <div className='flex flex-col gap-1'>
+                            <label htmlFor="" className='font-normal text-base'>Product code</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={productCode}
+                                onChange={(e) => setProductCode(e.target.value)}
+                                id=""
+                                placeholder='Enter Product code'
+                                className='border-[1px] w-full
+                                    bg-gray-100/50 p-2 uppercase rounded-md placeholder:text-sm placeholder:font-light placeholder:text-gray-500
+                                     focus:outline-none placeholder:capitalize'/>
+                        </div>
+
                         {/* price */}
                         <div className='flex justify-between items-center gap-2'>
                             <div className='flex flex-col gap-1 w-1/3'>
@@ -605,6 +671,8 @@ const AddProduct = () => {
                                      focus:outline-none'/>
                             </div>
                         </div>
+
+                        {/* Rest of the component remains the same */}
                         {/* checkboxes eg:latest, featured, offer */}
                         <div className='flex items-center justify-between flex-wrap gap-3'>
                             <Checkbox
@@ -637,8 +705,7 @@ const AddProduct = () => {
                             />
                         </div>
 
-
-                        {/* specifications */}
+                        {/* specifications - Rest of the specifications code remains the same */}
                         <div className='flex flex-col gap-1'>
                             <label htmlFor="" className='font-normal text-base'>Specifications</label>
 
@@ -839,7 +906,6 @@ const AddProduct = () => {
                             )}
                         </div>
 
-
                         {/* description */}
                         <div className='flex flex-col gap-1'>
                             <label htmlFor="" className='font-normal text-base'>Product Description</label>
@@ -857,7 +923,7 @@ const AddProduct = () => {
                     </div>
                 </div>
 
-                {/* photo upload */}
+                {/* photo upload - Rest of the component remains the same */}
                 <div className='bg-white rounded-xl shadow-md p-5 space-y-6 h-fit'>
                     <div className='grid grid-cols-5 gap-2'>
                         <div className="col-span-3 flex flex-col justify-center items-center h-56 border-4 border-dashed border-primary rounded-xl">
@@ -902,7 +968,7 @@ const AddProduct = () => {
                         </div>
                     </div>
 
-                    {/* manufacter name */}
+                    {/* manufacturer details - Rest remains the same */}
                     <div className='flex flex-col gap-1'>
                         <label htmlFor="manufacturer" className='font-normal text-base'>Manufacturer Name</label>
                         <select
@@ -914,12 +980,9 @@ const AddProduct = () => {
                    placeholder:text-sm placeholder:font-light placeholder:text-gray-500 focus:outline-none'>
                             <option value="">Select Manufacturer</option>
                             <option value="POKY">POKY</option>
-                            {/* Add more options here if needed */}
                         </select>
                     </div>
 
-
-                    {/* manufacter brand */}
                     <div className='flex flex-col gap-1'>
                         <label htmlFor="manufacturerBrand" className='font-normal text-base'>Manufacturer Brand</label>
                         <select
@@ -931,12 +994,9 @@ const AddProduct = () => {
                    placeholder:text-sm placeholder:font-light placeholder:text-gray-500 focus:outline-none'>
                             <option value="">Select Brand</option>
                             <option value="POKY">POKY</option>
-                            {/* Add more brand options if needed */}
                         </select>
                     </div>
 
-
-                    {/* manufacter address */}
                     <div className='flex flex-col gap-1'>
                         <label htmlFor="manufacturerAddress" className='font-normal text-base'>Manufacturer Address</label>
                         <select
@@ -948,12 +1008,10 @@ const AddProduct = () => {
                    placeholder:text-sm placeholder:font-light placeholder:text-gray-500 focus:outline-none'>
                             <option value="">Select Address</option>
                             <option value="POKY">POKY</option>
-                            {/* Add more address options here if needed */}
                         </select>
                     </div>
 
-
-                    {/* color size stock */}
+                    {/* color size stock - Rest remains the same */}
                     <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-between">
                             <label htmlFor="">Set Product Attributes</label>
@@ -995,50 +1053,6 @@ const AddProduct = () => {
                                         onClick={() => handleDeleteColorField(colorIndex)}
                                     />
                                 </div>
-                        {/* {attributeFields.map((field, colorIndex) => (
-                            <div key={colorIndex} className="flex flex-col gap-2">
-                                
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="flex items-center gap-2 w-full">
-                                        <div className="w-64 bg-primary text-white rounded-md font-custom tracking-wider flex items-center justify-center gap-2 p-2 cursor-pointer relative">
-                                            <input
-                                                type="color"
-                                                value={field.color.startsWith('#') ? field.color : '#ffffff'} // Default to white if not hex
-                                                onChange={(e) => {
-                                                    const hexColor = e.target.value;
-                                                    const colorName = getNamedColor(hexColor);
-                                                    handleAttributeInputChange(colorIndex, "color", colorName);
-                                                }}
-                                                className="absolute w-full h-full opacity-0 cursor-pointer"
-                                            />
-                                            <p className='text-sm flex items-center gap-2'>
-                                                <FaPlus className="text-base" />
-                                                {field.color ? getNamedColor(field.color) : "Add Color"}
-                                            </p>
-                                        </div>
-                                        <div className='w-full'>
-                                            <input
-                                                type="text"
-                                                value={field.color}
-                                                placeholder="Enter color name or color code"
-                                                onChange={(e) => handleAttributeInputChange(colorIndex, "color", e.target.value)}
-                                                className={`w-full p-2 text-center bg-gray-100/50 border rounded-md text-sm uppercase placeholder:capitalize focus:outline-none ${getContrastYIQ(field.color)}`}
-                                                style={{
-                                                    backgroundColor: field.color.startsWith('#') ? field.color : '#ffffff',
-                                                    color: getContrastYIQ(field.color.startsWith('#') ? field.color : '#ffffff')
-                                                }}
-                                                required
-                                            />
-                                            {!field.color && (
-                                                <p className="text-red-500 text-xs mt-1">Color is required</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <MdDelete
-                                        className="text-xl text-primary cursor-pointer"
-                                        onClick={() => handleDeleteColorField(colorIndex)}
-                                    />
-                                </div> */}
 
                                 <div className='flex flex-col gap-2'>
                                     {Array.isArray(field.sizes) && field.sizes.map((sizeField, sizeIndex) => (
@@ -1110,11 +1124,11 @@ const AddProduct = () => {
                                     <label className="text-sm font-medium">Select Size Charts</label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                                         {sizeChartOptions.map((chart) => {
-                                            const isChecked = selectedSizeChartRefs.includes(chart._id); // Use chart._id, not chart.id
+                                            const isChecked = selectedSizeChartRefs.includes(chart._id);
 
                                             return (
                                                 <label
-                                                    key={chart._id} // Also update key to use _id
+                                                    key={chart._id}
                                                     className="flex items-center gap-2 bg-gray-100/50 p-2 rounded-md border cursor-pointer"
                                                 >
                                                     <input
@@ -1122,9 +1136,9 @@ const AddProduct = () => {
                                                         checked={isChecked}
                                                         onChange={() => {
                                                             if (isChecked) {
-                                                                setSelectedSizeChartRefs((prev) => prev.filter(id => id !== chart._id)); // Use _id
+                                                                setSelectedSizeChartRefs((prev) => prev.filter(id => id !== chart._id));
                                                             } else {
-                                                                setSelectedSizeChartRefs((prev) => [...prev, chart._id]); // Use _id
+                                                                setSelectedSizeChartRefs((prev) => [...prev, chart._id]);
                                                             }
                                                         }}
                                                     />
@@ -1137,7 +1151,6 @@ const AddProduct = () => {
                             </div>
                         ))}
                     </div>
-
 
                     {/* button */}
                     <div className='flex justify-center items-center !mt-5'>

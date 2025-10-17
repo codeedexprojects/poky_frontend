@@ -20,8 +20,8 @@ const EditProduct = () => {
     const initialProducts = location.state?.product || {};
     const [editAttributeFields, setEditAttributeFields] = useState([{ color: "", sizes: [{ size: "", stock: "" }] }]);
     const [editProdTitle, setEditProdTitle] = useState('')
-    const [editProdCategory, setEditProdCategory] = useState('')
-    const [editProdSubCategory, setEditProdSubCategory] = useState('')
+    const [editProdCategory, setEditProdCategory] = useState([])
+    const [editProdSubCategory, setEditProdSubCategory] = useState([])
     const [editProdCode, setEditProdCode] = useState('')
     const [editProdActualPrice, setEditProdActualPrice] = useState('')
     const [editProdDiscount, setEditProdDiscount] = useState('')
@@ -58,6 +58,7 @@ const EditProduct = () => {
     const [selectedSizeChartRefs, setSelectedSizeChartRefs] = useState([]);
     const [materials, setMaterials] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
     const [specificationOptions, setSpecificationOptions] = useState({
         netWeight: [],
         fit: [],
@@ -192,8 +193,21 @@ const EditProduct = () => {
     useEffect(() => {
         if (initialProducts) {
             setEditProdTitle(initialProducts.title);
-            setEditProdCategory(initialProducts.category._id);
-            setEditProdSubCategory(initialProducts.subcategory?._id);
+
+            // Handle categories - convert to array if needed
+            if (Array.isArray(initialProducts.category)) {
+                setEditProdCategory(initialProducts.category.map(cat => cat._id || cat));
+            } else {
+                setEditProdCategory(initialProducts.category?._id ? [initialProducts.category._id] : []);
+            }
+
+            // Handle subcategories - convert to array if needed
+            if (Array.isArray(initialProducts.subcategory)) {
+                setEditProdSubCategory(initialProducts.subcategory.map(sub => sub._id || sub));
+            } else {
+                setEditProdSubCategory(initialProducts.subcategory?._id ? [initialProducts.subcategory._id] : []);
+            }
+
             setEditProdCode(initialProducts.product_Code);
             setEditProdActualPrice(initialProducts.actualPrice);
             setEditProdDiscount(initialProducts.discount);
@@ -236,6 +250,20 @@ const EditProduct = () => {
         }
     }, [initialProducts]);
 
+    // Handle category selection (multiple)
+    const handleCategoryChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setEditProdCategory(selectedOptions);
+
+        // Reset subcategories when categories change
+        setEditProdSubCategory([]);
+    };
+
+    // Handle subcategory selection (multiple)
+    const handleSubCategoryChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+        setEditProdSubCategory(selectedOptions);
+    };
 
 
 
@@ -284,14 +312,16 @@ const EditProduct = () => {
 
 
     // subcategory display based on category id
+    // subcategory display based on selected categories
     useEffect(() => {
-        if (editProdCategory) {
+        if (editProdCategory.length > 0) {
             const filtered = subCategories.filter(
-                (subcategory) => subcategory.category._id === editProdCategory
+                (subcategory) => editProdCategory.includes(subcategory.category._id)
             );
             setFilteredSubCategories(filtered);
         } else {
             setFilteredSubCategories([]);
+            setEditProdSubCategory([]); // Clear subcategories when no categories selected
         }
     }, [editProdCategory, subCategories]);
 
@@ -334,17 +364,20 @@ const EditProduct = () => {
             }
 
             // Validate required inputs
-            if (!editProdTitle.trim() || !editProdCategory.trim()) {
-                alert("Product title and category are required");
+            if (!editProdTitle.trim() || editProdCategory.length === 0) {
+                toast.error("Product title and at least one category are required");
                 return;
             }
-
             // Initialize FormData
             const editproductFormData = new FormData();
             editproductFormData.append('folder', 'Products');
             editproductFormData.append('title', editProdTitle);
-            editproductFormData.append('category', editProdCategory);
-            editproductFormData.append('subcategory', editProdSubCategory);
+            editProdCategory.forEach(categoryId => {
+                editproductFormData.append('category', categoryId);
+            });
+            editProdSubCategory.forEach(subcategoryId => {
+                editproductFormData.append('subcategory', subcategoryId);
+            });
             editproductFormData.append('product_Code', editProdCode);
             editproductFormData.append('actualPrice', editProdActualPrice);
             editproductFormData.append('discount', editProdDiscount);
@@ -568,56 +601,98 @@ const EditProduct = () => {
                         </div>
 
                         {/* category */}
+                        {/* category and subcategory */}
                         <div className='flex justify-between items-center gap-2'>
                             <div className='flex flex-col gap-1 w-full'>
-                                <label className='font-normal text-base'>Product Category</label>
+                                <label className='font-normal text-base'>Product Categories</label>
                                 <select
-                                    name="selectField"
+                                    name="category"
                                     value={editProdCategory}
-                                    onChange={(e) => setEditProdCategory(e.target.value)}
-                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer"
+                                    onChange={handleCategoryChange}
+                                    multiple
+                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer h-32"
                                 >
-                                    <option value="Option 1" >Select Category</option>
-                                    {
-                                        categories.map((category) => (
-                                            <option className='text-gray-500 capitalize' key={category.id} value={category.id}>{category.name}</option>
-                                        ))
-                                    }
+                                    <option value="" disabled>Select Categories (Multiple)</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id} className='capitalize'>
+                                            {category.name}
+                                        </option>
+                                    ))}
                                 </select>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Hold Ctrl/Cmd to select multiple categories
+                                </p>
+                                {editProdCategory.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-xs font-medium text-gray-700">Selected Categories:</p>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {editProdCategory.map(catId => {
+                                                const category = categories.find(c => c.id === catId);
+                                                return category ? (
+                                                    <span key={catId} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                        {category.name}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {/* subcategory */}
                             <div className='flex flex-col gap-1 w-full'>
-                                <label className='font-normal text-base'>Sub Category</label>
+                                <label className='font-normal text-base'>Sub Categories</label>
                                 <select
-                                    name="selectField"
+                                    name="subcategory"
                                     value={editProdSubCategory}
-                                    onChange={(e) => setEditProdSubCategory(e.target.value)}
-                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer"
+                                    onChange={handleSubCategoryChange}
+                                    multiple
+                                    disabled={editProdCategory.length === 0}
+                                    className="w-full capitalize text-sm text-secondary font-light bg-gray-100/50 border p-2 rounded focus:outline-none focus:cursor-pointer h-32"
                                 >
-                                    <option value="Option 1">Select SubCategory</option>
-                                    {
-                                        filteredSubCategories.map((subcategory) => (
-                                            <option className='text-gray-500 capitalize' key={subcategory._id} value={subcategory._id}>{subcategory.title}</option>
-                                        ))
-                                    }
-
+                                    <option value="" disabled>
+                                        {editProdCategory.length === 0 ? "Select categories first" : "Select SubCategories (Multiple)"}
+                                    </option>
+                                    {filteredSubCategories.map((subcategory) => (
+                                        <option key={subcategory._id} value={subcategory._id} className='capitalize'>
+                                            {subcategory.title}
+                                        </option>
+                                    ))}
                                 </select>
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Hold Ctrl/Cmd to select multiple subcategories
+                                </p>
+                                {editProdSubCategory.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="text-xs font-medium text-gray-700">Selected Subcategories:</p>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                            {editProdSubCategory.map(subId => {
+                                                const subcategory = filteredSubCategories.find(s => s._id === subId);
+                                                return subcategory ? (
+                                                    <span key={subId} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                                                        {subcategory.title}
+                                                    </span>
+                                                ) : null;
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            {/* product code */}
-                            <div className='flex flex-col gap-1 w-full'>
-                                <label htmlFor="" className='font-normal text-base'>Product code</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={editProdCode}
-                                    onChange={(e) => setEditProdCode(e.target.value)}
-                                    id=""
-                                    placeholder='Enter Product title'
-                                    className='border-[1px] uppercase w-full
-                                    bg-gray-100/50 p-2 rounded-md placeholder:text-sm placeholder:font-light placeholder:text-gray-500
-                                     focus:outline-none placeholder:capitalize'/>
-                            </div>
+                        </div>
+
+                        {/* product code - move this outside the above div */}
+                        <div className='flex flex-col gap-1'>
+                            <label htmlFor="" className='font-normal text-base'>Product code</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={editProdCode}
+                                onChange={(e) => setEditProdCode(e.target.value)}
+                                id=""
+                                placeholder='Enter Product code'
+                                className='border-[1px] uppercase w-full
+        bg-gray-100/50 p-2 rounded-md placeholder:text-sm placeholder:font-light placeholder:text-gray-500
+         focus:outline-none placeholder:capitalize'/>
                         </div>
 
                         {/* price , disvcount, offer price */}

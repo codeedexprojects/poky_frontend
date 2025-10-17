@@ -13,8 +13,9 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
 
             try {
                 const response = await axios.get(`${BASE_URL}/user/subCategory/get`);
+                // Filter subcategories that belong to ANY of the selected categories
                 const filterSubCategory = response.data.filter(
-                    subcat => subcat.MainCategory.id === categoryId
+                    subcat => categoryId.includes(subcat.MainCategory.id)
                 );
                 setSubCategories(filterSubCategory);
             } catch (error) {

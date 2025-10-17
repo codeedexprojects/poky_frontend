@@ -17,7 +17,6 @@ import { ImageZoomModal } from '../ImageZoomModal/ImageZoomModal';
 import { CgArrowLongLeft } from "react-icons/cg";
 import FilterByCategory from './FilterByCategory';
 
-
 const AllCategory = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -33,14 +32,12 @@ const AllCategory = () => {
     const [openUserNotLogin, setOpenUserNotLogin] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
 
-
     const userId = localStorage.getItem('userId');
 
     // handle non logged users modal
     const handleOpenUserNotLogin = () => {
         setOpenUserNotLogin(!openUserNotLogin);
     };
-
 
     // Filter states
     const [selectedSize, setSelectedSize] = useState(null);
@@ -69,44 +66,58 @@ const AllCategory = () => {
             setIsLoading(false);
         }
     };
+    
     useEffect(() => {
         fetchProducts();
     }, [productsCategory.id]);
-
 
     // Function to apply all filters
     const applyFilters = () => {
         let filteredProducts = [...allProducts];
 
-        // Apply category filter (NEW)
+        // Apply category filter - UPDATED for multiple categories
         if (selectedCategory) {
             filteredProducts = filteredProducts.filter(
-                (product) => product.category._id === selectedCategory
+                (product) => {
+                    // Handle both single category (string) and multiple categories (array)
+                    if (Array.isArray(product.category)) {
+                        return product.category.some(cat => cat._id === selectedCategory);
+                    } else {
+                        return product.category._id === selectedCategory;
+                    }
+                }
             );
         }
 
-        // Apply subcategory filter
+        // Apply subcategory filter - UPDATED for multiple subcategories
         if (selectedSubCategory) {
             filteredProducts = filteredProducts.filter(
-                (product) => product.subcategory._id === selectedSubCategory
+                (product) => {
+                    // Handle both single subcategory (string) and multiple subcategories (array)
+                    if (Array.isArray(product.subcategory)) {
+                        return product.subcategory.some(subcat => subcat._id === selectedSubCategory);
+                    } else {
+                        return product.subcategory._id === selectedSubCategory;
+                    }
+                }
             );
         }
 
-        // Apply size filter
+        // Apply size filter (unchanged)
         if (selectedSize) {
             filteredProducts = filteredProducts.filter((product) =>
                 product.colors.some((color) => color.sizes.some((s) => s.size === selectedSize))
             );
         }
 
-        // Apply material filter
+        // Apply material filter (unchanged)
         if (selectedMaterial) {
             filteredProducts = filteredProducts.filter(
                 (product) => product.features.material === selectedMaterial
             );
         }
 
-        // Apply price range filter
+        // Apply price range filter (unchanged)
         if (priceRange) {
             const [minPrice, maxPrice] = priceRange;
             filteredProducts = filteredProducts.filter(
@@ -116,6 +127,7 @@ const AllCategory = () => {
 
         setProducts(filteredProducts);
     };
+
     const handleCategoryFilter = (categoryId) => {
         setSelectedCategory(categoryId);
     };
@@ -170,6 +182,21 @@ const AllCategory = () => {
         }
     };
 
+    // Helper function to get category name for display
+    const getCategoryName = (product) => {
+        if (Array.isArray(product.category)) {
+            return product.category.map(cat => cat.name).join(', ');
+        }
+        return product.category?.name || '';
+    };
+
+    // Helper function to get subcategory name for display
+    const getSubcategoryName = (product) => {
+        if (Array.isArray(product.subcategory)) {
+            return product.subcategory.map(subcat => subcat.title).join(', ');
+        }
+        return product.subcategory?.title || '';
+    };
 
     return (
         <>
@@ -218,8 +245,16 @@ const AllCategory = () => {
                                 products.map((product) => {
                                     return (
                                         <div className='group relative' key={product._id}>
-                                            <Link to={`/product-details/${product._id}/${product.category._id}`}
-                                                state={{ productId: product._id, categoryId: product.category._id }} className="cursor-pointer">
+                                            <Link 
+                                                to={`/product-details/${product._id}/${product.category._id}`}
+                                                state={{ 
+                                                    productId: product._id, 
+                                                    categoryId: Array.isArray(product.category) 
+                                                        ? product.category[0]?._id 
+                                                        : product.category?._id 
+                                                }} 
+                                                className="cursor-pointer"
+                                            >
                                                 <div className="w-full aspect-[2/3] rounded-xl overflow-hidden">
                                                     <img src={product.images[0]} alt="" className='w-full h-full object-cover rounded-xl shadow-md transition transform scale-100 duration-500 ease-in-out cursor-pointer group-hover:scale-105' onError={(e) => e.target.src = '/no-image.jpg'} />
                                                 </div>
@@ -236,6 +271,21 @@ const AllCategory = () => {
                                             <div className='mt-3'>
                                                 <p className='font-medium text-sm xl:text-lg lg:text-lg truncate capitalize'>{product.title}</p>
                                                 <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm truncate overflow-hidden whitespace-nowrap w-40 xl:w-56 lg:w-48 capitalize'>{product.description.slice(0, 17) + '...'}</p>
+                                                
+                                                {/* Display multiple categories if available */}
+                                                {Array.isArray(product.category) && product.category.length > 1 && (
+                                                    <p className='text-xs text-gray-500 mt-1'>
+                                                        Categories: {getCategoryName(product)}
+                                                    </p>
+                                                )}
+                                                
+                                                {/* Display multiple subcategories if available */}
+                                                {Array.isArray(product.subcategory) && product.subcategory.length > 1 && (
+                                                    <p className='text-xs text-gray-500'>
+                                                        Collections: {getSubcategoryName(product)}
+                                                    </p>
+                                                )}
+                                                
                                                 <div className='flex items-center gap-2 mt-2'>
                                                     {/* Star Rating */}
                                                     <div className='flex items-center gap-1'>
@@ -290,6 +340,5 @@ const AllCategory = () => {
         </>
     );
 };
-
 
 export default AllCategory;
