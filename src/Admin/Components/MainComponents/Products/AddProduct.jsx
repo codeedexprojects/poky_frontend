@@ -229,7 +229,7 @@ const AddProduct = () => {
     const handleCategoryChange = (e) => {
         const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
         setProductCategory(selectedOptions);
-        
+
         // Reset subcategories when categories change
         setProductSubCategory([]);
     };
@@ -332,7 +332,7 @@ const AddProduct = () => {
             const productFormData = new FormData();
             productFormData.append('folder', 'Products');
             productFormData.append('title', productTitle);
-            
+
             // Append categories and subcategories as arrays
             productCategory.forEach(categoryId => {
                 productFormData.append('category', categoryId);
@@ -340,7 +340,7 @@ const AddProduct = () => {
             productSubCategory.forEach(subcategoryId => {
                 productFormData.append('subcategory', subcategoryId);
             });
-            
+
             productFormData.append('product_Code', productCode);
             productFormData.append('actualPrice', productActualPrice);
             productFormData.append('discount', productDiscount);
@@ -1073,7 +1073,9 @@ const AddProduct = () => {
                                                         required
                                                     >
                                                         <option value="">Select Size</option>
-                                                        <optgroup label="Sizes">
+
+                                                        {/* Adult Sizes with Measurements */}
+                                                        <optgroup label="Adult Sizes">
                                                             <option value="XS (34)">XS (34)</option>
                                                             <option value="S (36)">S (36)</option>
                                                             <option value="M (38)">M (38)</option>
@@ -1084,7 +1086,9 @@ const AddProduct = () => {
                                                             <option value="4XL (48)">4XL (48)</option>
                                                             <option value="5XL (50)">5XL (50)</option>
                                                         </optgroup>
-                                                        <optgroup label="Sizes">
+
+                                                        {/* Standard Adult Sizes */}
+                                                        <optgroup label="Standard Sizes">
                                                             <option value="S">S</option>
                                                             <option value="M">M</option>
                                                             <option value="L">L</option>
@@ -1092,12 +1096,37 @@ const AddProduct = () => {
                                                             <option value="2XL">2XL</option>
                                                             <option value="3XL">3XL</option>
                                                         </optgroup>
+
+                                                        {/* Kids Sizes */}
+                                                        <optgroup label="Kids">
+                                                            <option value="1 Year">1 Year</option>
+                                                            <option value="2 Year">2 Year</option>
+                                                            <option value="3 Year">3 Year</option>
+                                                            <option value="4 Year">4 Year</option>
+                                                            <option value="5 Year">5 Year</option>
+                                                            <option value="6 Year">6 Year</option>
+                                                            <option value="7 Year">7 Year</option>
+                                                        </optgroup>
+
+                                                        {/* Boys Sizes */}
+                                                        <optgroup label="Boys">
+                                                            <option value="6-7 Years">6-7 Years</option>
+                                                            <option value="8-9 Years">8-9 Years</option>
+                                                            <option value="10-11 Years">10-11 Years</option>
+                                                            <option value="12-13 Years">12-13 Years</option>
+                                                            <option value="14-15 Years">14-15 Years</option>
+                                                            <option value="16-17 Years">16-17 Years</option>
+                                                        </optgroup>
+
+                                                        {/* Free Size */}
                                                         <option value="Free">Free</option>
                                                     </select>
+
                                                     {!sizeField.size && (
                                                         <p className="text-red-500 text-xs mt-1">Size is required</p>
                                                     )}
                                                 </div>
+
                                                 <div className="w-full">
                                                     <input
                                                         type="number"

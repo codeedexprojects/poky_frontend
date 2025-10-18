@@ -1176,11 +1176,15 @@ const EditProduct = () => {
                                             <div className='flex items-center gap-2 w-full'>
                                                 <select
                                                     value={sizeField.size}
-                                                    onChange={(e) => handleSizeFieldChange(colorIndex, sizeIndex, "size", e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleSizeFieldChange(colorIndex, sizeIndex, "size", e.target.value)
+                                                    }
                                                     className="border w-full bg-gray-100/50 p-2 rounded-md uppercase placeholder:text-sm focus:outline-none placeholder:capitalize"
                                                 >
                                                     <option value="">Select Size</option>
-                                                    <optgroup label="Sizes">
+
+                                                    {/* Adult Sizes with Measurements */}
+                                                    <optgroup label="Adult Sizes">
                                                         <option value="XS (34)">XS (34)</option>
                                                         <option value="S (36)">S (36)</option>
                                                         <option value="M (38)">M (38)</option>
@@ -1191,7 +1195,9 @@ const EditProduct = () => {
                                                         <option value="4XL (48)">4XL (48)</option>
                                                         <option value="5XL (50)">5XL (50)</option>
                                                     </optgroup>
-                                                    <optgroup label="Sizes">
+
+                                                    {/* Standard Sizes */}
+                                                    <optgroup label="Standard Sizes">
                                                         <option value="S">S</option>
                                                         <option value="M">M</option>
                                                         <option value="L">L</option>
@@ -1199,16 +1205,43 @@ const EditProduct = () => {
                                                         <option value="2XL">2XL</option>
                                                         <option value="3XL">3XL</option>
                                                     </optgroup>
+
+                                                    {/* Kids Sizes */}
+                                                    <optgroup label="Kids">
+                                                        <option value="1 Year">1 Year</option>
+                                                        <option value="2 Year">2 Year</option>
+                                                        <option value="3 Year">3 Year</option>
+                                                        <option value="4 Year">4 Year</option>
+                                                        <option value="5 Year">5 Year</option>
+                                                        <option value="6 Year">6 Year</option>
+                                                        <option value="7 Year">7 Year</option>
+                                                    </optgroup>
+
+                                                    {/* Boys Sizes */}
+                                                    <optgroup label="Boys">
+                                                        <option value="6-7 Years">6-7 Years</option>
+                                                        <option value="8-9 Years">8-9 Years</option>
+                                                        <option value="10-11 Years">10-11 Years</option>
+                                                        <option value="12-13 Years">12-13 Years</option>
+                                                        <option value="14-15 Years">14-15 Years</option>
+                                                        <option value="16-17 Years">16-17 Years</option>
+                                                    </optgroup>
+
+                                                    {/* Free Size */}
                                                     <option value="Free">Free</option>
                                                 </select>
+
                                                 <input
                                                     type="number"
                                                     value={sizeField.stock}
                                                     placeholder="Enter stock quantity"
-                                                    onChange={(e) => handleSizeFieldChange(colorIndex, sizeIndex, "stock", e.target.value)}
+                                                    onChange={(e) =>
+                                                        handleSizeFieldChange(colorIndex, sizeIndex, "stock", e.target.value)
+                                                    }
                                                     className="border w-full bg-gray-100/50 p-2 rounded-md placeholder:text-sm focus:outline-none placeholder:capitalize"
                                                 />
                                             </div>
+
                                             <HiMiniXMark
                                                 className="text-2xl text-black cursor-pointer"
                                                 onClick={() => handleDeleteSizeField(colorIndex, sizeIndex)}
