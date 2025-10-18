@@ -272,20 +272,7 @@ const AllCategory = () => {
                                                 <p className='font-medium text-sm xl:text-lg lg:text-lg truncate capitalize'>{product.title}</p>
                                                 <p className='text-black-200 font-normal text-xs xl:text-sm lg:text-sm truncate overflow-hidden whitespace-nowrap w-40 xl:w-56 lg:w-48 capitalize'>{product.description.slice(0, 17) + '...'}</p>
                                                 
-                                                {/* Display multiple categories if available */}
-                                                {Array.isArray(product.category) && product.category.length > 1 && (
-                                                    <p className='text-xs text-gray-500 mt-1'>
-                                                        Categories: {getCategoryName(product)}
-                                                    </p>
-                                                )}
-                                                
-                                                {/* Display multiple subcategories if available */}
-                                                {Array.isArray(product.subcategory) && product.subcategory.length > 1 && (
-                                                    <p className='text-xs text-gray-500'>
-                                                        Collections: {getSubcategoryName(product)}
-                                                    </p>
-                                                )}
-                                                
+                                               
                                                 <div className='flex items-center gap-2 mt-2'>
                                                     {/* Star Rating */}
                                                     <div className='flex items-center gap-1'>

@@ -48,7 +48,7 @@ const [chartToDelete, setChartToDelete] = useState(null);
                     Authorization: `Bearer ${token}`
                 };
 
-                const response = await axios.get("https://poky-web.netlify.app/api/admin/sizechart/get", { headers });
+                const response = await axios.get("https://pokystore.in/api/admin/sizechart/get", { headers });
                 setAdminSizeCharts(response.data);
                 setIsLoading(false);
             } catch (error) {
