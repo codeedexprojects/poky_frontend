@@ -29,11 +29,11 @@ const LatestProducts = () => {
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
-  
+
     // Cleanup function
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
 
   const userId = localStorage.getItem('userId');
 
@@ -78,24 +78,24 @@ const LatestProducts = () => {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchLatestProducts();
   }, []);
 
-  // Filter products by category
+  // Filter products by category 
   const filterProductsByCategory = (categoryName) => {
     setSelectedCategory(categoryName);
-    
+
     if (categoryName === 'All') {
       setFilteredProducts(latestProducts);
     } else {
-      const filtered = latestProducts.filter(product => 
-        product.category && product.category.name === categoryName
-      );
+      const filtered = latestProducts.filter(product => {
+        return product.category && product.category.some(cat => cat.name === categoryName);
+      });
       setFilteredProducts(filtered);
     }
-    setShowAllLatest(false); // Reset view all when filter changes
+    setShowAllLatest(false); 
   };
 
   // add to wishlist
@@ -132,7 +132,7 @@ const LatestProducts = () => {
 
 
   return (
-   <>
+    <>
       <div className='mb-6'>
         <h1 className='text-secondary text-2xl md:text-3xl lg:text-4xl font-bold text-center xl:text-left mb-3'>
           <b>Latest Products</b>
@@ -140,20 +140,19 @@ const LatestProducts = () => {
         <p className='text-gray-600 text-base md:text-lg lg:text-lg mt-2 text-center xl:text-left'>
           Stand out with our latest collection-bold designs, premium fabrics, and <br /> street-ready fits. Once they're gone, they're gone. Don't miss out!
         </p>
-        
+
         {/* Filter Buttons */}
         <div className='flex items-center gap-3 mt-4 flex-wrap'>
-          <button 
+          <button
             onClick={() => filterProductsByCategory('All')}
-            className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
-              selectedCategory === 'All' 
-              ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
-              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-            }`}
+            className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === 'All'
+                ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
           >
             All
           </button>
-          
+
           {categoriesLoading ? (
             <div className="flex gap-3">
               {[1, 2, 3].map((item) => (
@@ -164,14 +163,13 @@ const LatestProducts = () => {
             </div>
           ) : (
             categories.map((category) => (
-              <button 
+              <button
                 key={category.id}
                 onClick={() => filterProductsByCategory(category.name)}
-                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
-                  selectedCategory === category.name 
-                  ? 'border-gray-300 bg-black text-white hover:bg-gray-900' 
-                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${selectedCategory === category.name
+                    ? 'border-gray-300 bg-black text-white hover:bg-gray-900'
+                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 {category.name}
               </button>
@@ -197,8 +195,8 @@ const LatestProducts = () => {
         ) : filteredProducts.length === 0 ? (
           <>
             <p className='col-span-5 flex items-center justify-center h-[50vh]'>
-              {selectedCategory === 'All' 
-                ? 'No latest products available' 
+              {selectedCategory === 'All'
+                ? 'No latest products available'
                 : `No latest products available in ${selectedCategory}`
               }
             </p>
@@ -210,7 +208,7 @@ const LatestProducts = () => {
                 return (
                   <div className='group relative' key={product._id}>
                     <Link
-                       to={`/product-details/${product._id}/${product.category._id}`}
+                      to={`/product-details/${product._id}/${product.category._id}`}
                       state={{
                         productId: product._id,
                         categoryId: product.category._id
@@ -250,28 +248,28 @@ const LatestProducts = () => {
                         {product.description.slice(0, 20) + '...'}
                       </p>
                       <div className='flex items-center gap-2 mt-2'>
-                                            {/* Star Rating */}
-                                            <div className='flex items-center gap-1'>
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <svg
-                                                        key={star}
-                                                        className={`w-3 h-3 xl:w-4 xl:h-4 lg:w-4 lg:h-4 ${star <= Math.floor(product.averageRating || 0)
-                                                                ? 'text-yellow-400 fill-current'
-                                                                : product.averageRating && star === Math.ceil(product.averageRating) && product.averageRating % 1 !== 0
-                                                                    ? 'text-yellow-400 fill-current'
-                                                                    : 'text-gray-300'
-                                                            }`}
-                                                        viewBox="0 0 20 20"
-                                                    >
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                    </svg>
-                                                ))}
-                                                {/* Average Rating Number */}
-                                                <span className='text-xs xl:text-sm lg:text-sm text-gray-600 ml-1'>
-                                                    ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
-                                                </span>
-                                            </div>
-                                        </div>
+                        {/* Star Rating */}
+                        <div className='flex items-center gap-1'>
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <svg
+                              key={star}
+                              className={`w-3 h-3 xl:w-4 xl:h-4 lg:w-4 lg:h-4 ${star <= Math.floor(product.averageRating || 0)
+                                ? 'text-yellow-400 fill-current'
+                                : product.averageRating && star === Math.ceil(product.averageRating) && product.averageRating % 1 !== 0
+                                  ? 'text-yellow-400 fill-current'
+                                  : 'text-gray-300'
+                                }`}
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                          {/* Average Rating Number */}
+                          <span className='text-xs xl:text-sm lg:text-sm text-gray-600 ml-1'>
+                            ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                          </span>
+                        </div>
+                      </div>
 
                       <div className='flex items-center gap-2 mt-2'>
                         <p className='text-black text-sm xl:text-base lg:text-base font-semibold'>

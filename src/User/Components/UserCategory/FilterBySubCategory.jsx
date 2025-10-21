@@ -42,7 +42,7 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                 {selectedSubCategory && (
                     <button
                         onClick={clearSubCategoryFilter}
-                        className="text-sm text-primary hover:text-primary-dark font-medium"
+                        className="text-sm text-black hover:text-gray-800 font-medium"
                     >
                         Clear All
                     </button>
@@ -64,8 +64,8 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                             <div
                                 className={`relative w-16 h-16 xl:w-20 xl:h-20 rounded-full p-[3px] border-2 ${
                                     selectedSubCategory === subCategory.id
-                                        ? 'border-[#a89160] shadow-md'
-                                        : 'border-gray-300 hover:border-[#a89160]'
+                                        ? 'border-black shadow-md'
+                                        : 'border-gray-300 hover:border-black'
                                 }`}
                             >
                                 <div className="w-full h-full rounded-full overflow-hidden">
@@ -83,7 +83,7 @@ const FilterBySubCategory = ({ categoryId, handleSubCategory }) => {
                             <span
                                 className={`mt-2 text-xs font-medium text-center capitalize px-3 py-1 rounded-full whitespace-nowrap ${
                                     selectedSubCategory === subCategory.id
-                                        ? 'bg-[#a89160] text-white font-semibold'
+                                        ? 'bg-black text-white font-semibold'
                                         : 'bg-gray-100 text-gray-700'
                                 }`}
                             >

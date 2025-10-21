@@ -76,7 +76,7 @@ const FeaturedProducts = () => {
             setFilteredProducts(filteredProducts); // Initialize filtered products with all featured products
             setIsLoading(false);
         } catch (error) {
-            console.error("Error fetching offer products:", error);
+            console.error("Error fetching featured products:", error);
             setIsLoading(false);
         }
     }
@@ -85,16 +85,17 @@ const FeaturedProducts = () => {
         fetchFeaturedProducts();
     }, []);
 
-    // Filter products by category
+    // Filter products by category - FIXED VERSION
     const filterProductsByCategory = (categoryName) => {
         setSelectedCategory(categoryName);
 
         if (categoryName === 'All') {
             setFilteredProducts(featuredProducts);
         } else {
-            const filtered = featuredProducts.filter(product =>
-                product.category && product.category.name === categoryName
-            );
+            const filtered = featuredProducts.filter(product => {
+                // Check if any category in the array matches the selected category name
+                return product.category && product.category.some(cat => cat.name === categoryName);
+            });
             setFilteredProducts(filtered);
         }
         setShowAllFeature(false); // Reset view all when filter changes
@@ -209,10 +210,10 @@ const FeaturedProducts = () => {
                             return (
                                 <div className='group relative' key={product._id}>
                                     <Link
-                                        to={`/product-details/${product._id}/${product.category._id}`}
+                                        to={`/product-details/${product._id}/${product.category[0]?._id}`}
                                         state={{
                                             productId: product._id,
-                                            categoryId: product.category._id
+                                            categoryId: product.category[0]?._id
                                         }}
                                         className="cursor-pointer"
                                     >
